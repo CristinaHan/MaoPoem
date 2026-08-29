@@ -185,12 +185,13 @@ html[data-bg="custom"] .phone::before {
   margin: 48px 0 0;
   line-height: 1; /* 品牌行高=字高，便于右上角图标与其垂直中心对齐 */
   text-align: center;
-  letter-spacing: 0.12em;
-  color: var(--red);
-  font-family: "草檀斋毛泽东字体", "CTZMZD", "Liu Jian Mao Cao", "Huiwen-mincho", var(--font-ui);
-  font-size: 28px;
-  font-weight: 400;
   transition: opacity 0.28s ease;
+}
+/* 品牌字：毛泽东手迹「星火」抠图（brand.png，透明底红字），替代字体渲染 */
+.brand-img {
+  height: 32px;
+  width: auto;
+  vertical-align: top;
 }
 
 .excerpt {
@@ -203,7 +204,7 @@ html[data-bg="custom"] .phone::before {
   border: 0;
   background: transparent;
   font: inherit;
-  font-family: var(--font-reading); /* 诗句用阅读字体；毛体只保留在 .brand「星火」二字 */
+  font-family: var(--font-reading); /* 诗句用阅读字体；品牌字已用手迹图（brand.png）替代 */
   font-size: var(--fs-excerpt);
   font-weight: 400;
   line-height: 1.7;
@@ -641,7 +642,7 @@ html[data-skin="hong"] .toast {
 .mine-name {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 18px;
   flex: 1;
 }
 .mine-icon {
@@ -652,6 +653,7 @@ html[data-skin="hong"] .toast {
   height: 22px;
   color: var(--gold);
   flex-shrink: 0;
+  margin-right: 14px; /* 图标与文字间距：mine-name 的 gap 对兄弟节点无效，须在此设 */
 }
 .mine-icon svg {
   width: 20px;
@@ -791,8 +793,8 @@ html[data-skin="hong"] .toast {
   text-align: center;
   padding: 12px 0 8px;
 }
-.about-brand {
-  font-size: 30px;
+.about-brand .brand-img {
+  height: 36px; /* 关于页品牌字略大 */
 }
 .about-ver {
   color: var(--muted);
