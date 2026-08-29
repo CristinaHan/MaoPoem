@@ -2,7 +2,7 @@
 """把手迹「星」「火」单字图（白底黑字）合成为透明底红字品牌图 web/brand.png。
 - 抠白底：亮度 → alpha（黑=255 不透明，白=0 透明）
 - 染红：颜色固定为品牌红 #8b1e1e（与 var(--red) 一致），alpha 保留笔迹浓淡
-- 合成：星高 108 / 火高 100（星笔画多视觉偏小，略放大平衡），垂直居中并排，字距 16px"""
+- 合成：星高 108 / 火高 92（星略大、火缩小，拉开大小差距），垂直居中并排，字距 24px"""
 from PIL import Image
 
 RED = (139, 30, 30)  # #8b1e1e
@@ -28,8 +28,8 @@ def load_char(path, target_h):
     return out.resize((max(1, int(out.width * ratio)), target_h), Image.LANCZOS)
 
 star = load_char("web/brand-crops/星.jpg", 108)  # 星笔画多、视觉偏小，略放大平衡
-fire = load_char("web/brand-crops/火.jpg", 100)
-GAP = 16  # 星火字距：拉开避免拥挤
+fire = load_char("web/brand-crops/火.jpg", 92)   # 火缩小，拉开与星的大小差距
+GAP = 24  # 星火字距：加大间距，更宽松
 W = star.width + GAP + fire.width
 H = max(star.height, fire.height)  # 画布取最高字高，避免放大后的星被裁
 canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))

@@ -214,6 +214,8 @@ html[data-bg="custom"] .phone::before {
   transition: opacity 0.28s ease;
 }
 .ex-line { display: block; }
+/* 标点符号视觉比重较小，用负左边距补偿视觉平衡 */
+.ex-line .punct { margin-left: -0.1em; }
 .excerpt:active { opacity: 0.7; }
 html:not(.fonts-ready) .brand,
 html:not(.fonts-ready) .excerpt,

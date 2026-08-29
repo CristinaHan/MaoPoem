@@ -227,7 +227,7 @@
 
   function formatExcerpt(text) {
     // 按逗号/分号拆成短句行（保留原分隔符）；"一阵风雷惊世界，满街红绿走旌旗。" → 两行
-    const parts = String(text).split(/([，；])/).map(function (p) {
+    const parts = String(text).split(/([，；。])/).map(function (p) {
       return p.trim();
     }).filter(Boolean);
     if (parts.length < 2) {
@@ -238,7 +238,8 @@
       rows.push(parts[i] + (parts[i + 1] || ""));
     }
     return rows.map(function (l) {
-      return '<span class="ex-line">' + escapeHtml(l) + "</span>";
+      // 标点符号包在单独的 span 中，用于视觉平衡补偿
+      return '<span class="ex-line">' + escapeHtml(l).replace(/([，；。])/g, '<span class="punct">$1</span>') + "</span>";
     }).join("");
   }
 
@@ -587,7 +588,7 @@
   }
 
   // —— 关于页
-  var CONTACT = { email: "3280302235@qq.com", github: "" }; // GitHub 仓库创建后填写
+  var CONTACT = { email: "3280302235@qq.com", github: "https://github.com/CristinaHan/MaoPoem" };
 
   function renderAbout() {
     document.getElementById("about-github-summary").textContent = CONTACT.github ? "已开放" : "整理中";
