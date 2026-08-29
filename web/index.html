@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-font="song" data-skin="xuan" data-bg="none">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>星火</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    // 字体就绪门控兜底：即使 app.js 加载失败，1.8s 后也强制显示品牌字与诗句（幂等）
+    (function () {
+      var done = false;
+      function mark() { if (!done) { done = true; document.documentElement.classList.add("fonts-ready"); } }
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(mark).catch(mark);
+      }
+      setTimeout(mark, 1800);
+    })();
+  </script>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" id="app">
+      <section class="view" id="view-home">
+        <div class="home-frame" aria-hidden="true">
+          <svg class="home-star" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.6l2.7 5.7 6.2.8-4.6 4.3 1.2 6.1L12 16.7 6.5 19.5l1.2-6.1L3.1 9.1l6.2-.8L12 2.6z"/>
+            <path class="star-inner" d="M12 2.6l2.7 5.7 6.2.8-4.6 4.3 1.2 6.1L12 16.7 6.5 19.5l1.2-6.1L3.1 9.1l6.2-.8L12 2.6z"/>
+          </svg>
+        </div>
+        <div class="top-icons">
+          <button class="icon-btn" id="btn-home-save" type="button" aria-label="收藏此句">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2.6l2.7 5.7 6.2.8-4.6 4.3 1.2 6.1L12 16.7 6.5 19.5l1.2-6.1L3.1 9.1l6.2-.8L12 2.6z"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="btn-menu" type="button" aria-label="我的">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 6.2h16M4 12h16M4 17.8h16"/>
+            </svg>
+          </button>
+        </div>
+        <p class="brand">星火</p>
+        <button class="excerpt" id="excerpt-btn" type="button">
+          <span id="excerpt-text"></span>
+        </button>
+        <div class="home-meta" id="home-meta">
+          <div class="home-title" id="home-title"></div>
+          <div class="home-date" id="home-date"></div>
+        </div>
+        <div class="home-actions">
+          <button class="btn ghost" id="btn-search" type="button">搜索</button>
+          <button class="btn primary" id="btn-next" type="button">换一句</button>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-search">
+        <header class="topbar">
+          <button class="back" id="search-back" type="button">返回</button>
+          <h1>搜索</h1>
+        </header>
+        <label class="sr-only" for="q">诗句或诗题</label>
+        <input id="q" type="search" placeholder="输入诗句或诗题" autocomplete="off" />
+        <ul class="results" id="results"></ul>
+      </section>
+
+      <section class="view hidden" id="view-saved">
+        <header class="topbar">
+          <button class="back" id="saved-back" type="button">返回</button>
+          <h1>收藏</h1>
+          <button class="link-btn" id="saved-manage" type="button">管理</button>
+        </header>
+        <div class="saved-tabs" id="saved-tabs">
+          <button type="button" data-tab="poem" id="tab-poem" class="on">全诗</button>
+          <button type="button" data-tab="line" id="tab-line">单句</button>
+        </div>
+        <ul class="results saved-list" id="saved-list"></ul>
+        <div class="manage-bar hidden" id="manage-bar">
+          <button id="manage-all" type="button">全选</button>
+          <button id="manage-del" type="button">取消收藏（<span id="manage-n">0</span>）</button>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-mine">
+        <header class="topbar">
+          <button class="back" id="mine-back" type="button">返回</button>
+          <h1>我的</h1>
+        </header>
+        <div class="mine">
+          <p class="mine-label">收藏</p>
+          <button class="mine-row" id="mine-saved" type="button">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2.6l2.7 5.7 6.2.8-4.6 4.3 1.2 6.1L12 16.7 6.5 19.5l1.2-6.1L3.1 9.1l6.2-.8L12 2.6z"/>
+              </svg>
+            </span>
+            <span class="mine-name">收藏</span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <p class="mine-label">设置</p>
+          <button class="mine-row" id="set-font" type="button" data-view="set-font">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <text x="12" y="16.5" text-anchor="middle" font-size="14">文</text>
+              </svg>
+            </span>
+            <span class="mine-name">字体</span>
+            <span class="mine-summary" id="set-font-val"></span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <button class="mine-row" id="set-size" type="button" data-view="set-size">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <text x="12" y="16" text-anchor="middle" font-size="13">Aa</text>
+              </svg>
+            </span>
+            <span class="mine-name">字号</span>
+            <span class="mine-summary" id="set-size-val"></span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <button class="mine-row" id="set-skin" type="button" data-view="set-skin">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3a9 9 0 1 0 9 9c0-1.1-.9-2-2-2h-2.2c-.9 0-1.6-.7-1.6-1.6 0-.4.2-.8.4-1.1.3-.3.4-.7.4-1.1 0-1-.8-1.8-1.8-1.8H13a5 5 0 0 0-1-9.9z"/>
+                <circle cx="7.5" cy="11" r="1.2"/>
+                <circle cx="9.5" cy="7" r="1.2"/>
+                <circle cx="13.5" cy="6.5" r="1.2"/>
+              </svg>
+            </span>
+            <span class="mine-name">皮肤颜色</span>
+            <span class="mine-summary" id="set-skin-val"></span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <button class="mine-row" id="set-bg" type="button" data-view="set-bg">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="4.5" width="18" height="15" rx="2"/>
+                <circle cx="8.5" cy="9.5" r="1.4"/>
+                <path d="M3 17l4.8-4.8 3.6 3.6 3-3L21 18.5"/>
+              </svg>
+            </span>
+            <span class="mine-name">背景</span>
+            <span class="mine-summary" id="set-bg-val"></span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <p class="mine-label">关于</p>
+          <button class="mine-row" id="mine-feedback" type="button">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="2"/>
+                <path d="M3 7.5l9 6 9-6"/>
+              </svg>
+            </span>
+            <span class="mine-name">意见反馈</span>
+            <span class="mine-summary" id="mine-feedback-summary"></span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <button class="mine-row" id="mine-about" type="button">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5"/>
+                <path d="M12 11.2v5"/>
+                <circle cx="12" cy="8" r="0.4"/>
+              </svg>
+            </span>
+            <span class="mine-name">关于星火</span>
+            <span class="mine-arrow">›</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-set-font">
+        <header class="topbar">
+          <button class="back" id="setfont-back" type="button">返回</button>
+          <h1>字体</h1>
+        </header>
+        <div class="set-page">
+          <div class="chips font-list" id="font-chips">
+            <button type="button" data-font="song">宋体</button>
+            <button type="button" data-font="kai">楷体</button>
+            <button type="button" data-font="fang">仿宋</button>
+            <button type="button" data-font="hei">黑体</button>
+            <button type="button" data-font="huiwen">汇文明朝</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-set-size">
+        <header class="topbar">
+          <button class="back" id="setsize-back" type="button">返回</button>
+          <h1>字号</h1>
+        </header>
+        <div class="set-page">
+          <div class="slider-row size-page-row">
+            <input id="size-slider" type="range" min="12" max="24" step="1" value="17" aria-label="字号" />
+            <span id="size-val">17pt</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-set-skin">
+        <header class="topbar">
+          <button class="back" id="setskin-back" type="button">返回</button>
+          <h1>皮肤颜色</h1>
+        </header>
+        <div class="set-page">
+          <div class="chips skin-chips skin-list" id="skin-chips">
+            <button type="button" class="skin-dot" data-skin="xuan" title="米白" aria-label="米白"></button>
+            <button type="button" class="skin-dot" data-skin="bai" title="素白" aria-label="素白"></button>
+            <button type="button" class="skin-dot" data-skin="lv" title="豆沙绿" aria-label="豆沙绿"></button>
+            <button type="button" class="skin-dot" data-skin="zong" title="暖棕" aria-label="暖棕"></button>
+            <button type="button" class="skin-dot" data-skin="qian" title="浅灰" aria-label="浅灰"></button>
+            <button type="button" class="skin-dot" data-skin="ye" title="夜读黑" aria-label="夜读黑"></button>
+            <button type="button" class="skin-dot" data-skin="hong" title="绛红" aria-label="绛红"></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-set-bg">
+        <header class="topbar">
+          <button class="back" id="setbg-back" type="button">返回</button>
+          <h1>背景</h1>
+        </header>
+        <div class="set-page">
+          <div class="chips" id="bg-chips">
+            <button type="button" data-bg="none">无</button>
+            <button type="button" data-bg="custom">+上传图片</button>
+          </div>
+          <input class="sr-only" id="bg-file" type="file" accept="image/*" />
+          <div class="slider-row hidden" id="opacity-row">
+            <span>浅</span>
+            <input id="bg-opacity" type="range" min="10" max="70" value="40" aria-label="背景深浅" />
+            <span id="opacity-val">40%</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-about">
+        <header class="topbar">
+          <button class="back" id="about-back" type="button">返回</button>
+          <h1>关于星火</h1>
+        </header>
+        <div class="mine">
+          <div class="about-hero">
+            <p class="brand about-brand">星火</p>
+            <p class="about-ver" id="about-version">版本 v1.0.0</p>
+            <p class="about-tagline">打开，读一句毛诗；点进去，看它被写下时的处境。</p>
+          </div>
+          <p class="mine-label">关于</p>
+          <button class="mine-row" id="about-privacy" type="button">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4.5" y="10" width="15" height="10" rx="1.5"/>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+              </svg>
+            </span>
+            <span class="mine-name">隐私政策</span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <button class="mine-row" id="about-help" type="button">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5"/>
+                <path d="M9.6 9.2a2.5 2.5 0 0 1 4.9.7c0 1.6-2.5 2-2.5 3.6"/>
+                <circle cx="12" cy="16.4" r="0.4"/>
+              </svg>
+            </span>
+            <span class="mine-name">帮助</span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <button class="mine-row" id="about-github" type="button">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3a9 9 0 0 0-2.8 17.5c.5.1.6-.2.6-.5v-1.7c-2.6.6-3.1-1.3-3.1-1.3-.4-1.1-1-1.4-1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.5-1.1-4.5-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1a9.3 9.3 0 0 1 4.9 0c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.5 4.9.4.3.7.9.7 1.8v2.7c0 .3.1.6.6.5A9 9 0 0 0 12 3z"/>
+              </svg>
+            </span>
+            <span class="mine-name">GitHub</span>
+            <span class="mine-summary" id="about-github-summary"></span>
+            <span class="mine-arrow">›</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="view hidden" id="view-privacy">
+        <header class="topbar">
+          <button class="back" id="privacy-back" type="button">返回</button>
+          <h1>隐私政策</h1>
+        </header>
+        <article class="doc" id="privacy-body"></article>
+      </section>
+
+      <section class="view hidden" id="view-help">
+        <header class="topbar">
+          <button class="back" id="help-back" type="button">返回</button>
+          <h1>帮助</h1>
+        </header>
+        <article class="doc" id="help-body"></article>
+      </section>
+
+      <section class="view hidden" id="view-detail">
+        <header class="topbar">
+          <button class="back" id="detail-back" type="button">返回</button>
+          <h1 id="detail-title"></h1>
+          <div class="top-actions">
+            <button class="icon-btn" id="btn-card" type="button" aria-label="存为图片">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3.2" y="4.8" width="17.6" height="14.4" rx="1.6"/>
+                <path d="M3.2 15.2l4.6-4.4 3.4 3.2 3.2-3.1 6.4 6.2"/>
+                <circle cx="8.2" cy="9.1" r="1.15"/>
+              </svg>
+            </button>
+            <button class="icon-btn star" id="btn-save" type="button" aria-label="收藏">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2.6l2.7 5.7 6.2.8-4.6 4.3 1.2 6.1L12 16.7 6.5 19.5l1.2-6.1L3.1 9.1l6.2-.8L12 2.6z"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+        <article class="detail" id="detail-body"></article>
+      </section>
+      <div class="toast" id="toast" role="status"></div>
+    </div>
+  </div>
+  <script src="data/poems.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,845 @@
+@import url("fonts/huiwen/result.css");
+@import url("fonts/liujian/result.css");
+
+:root {
+  --paper: #f4efe4;
+  --ink: #1c1612;
+  --muted: #6b5e52;
+  --line: #d7cfc2;
+  --red: #8b1e1e;
+  --red-deep: #6e1515;
+  --gold: #b0894a;
+  --gold-line: rgba(176, 137, 74, 0.5); /* 与各皮肤 override 保持一致，避免双源真相 */
+  --phone: 390px;
+  --bg-opacity: 0.4;
+  /* 界面字体（顶部栏/按钮/列表/设置等）固定，不随阅读设置改变 */
+  --font-ui: "Songti SC", "STSong", "SimSun", "Noto Serif SC", "Source Han Serif SC", serif;
+  /* 阅读字体（首页诗句/详情页正文），随「字体」设置切换 */
+  --font-reading: var(--font-ui);
+  --fs-excerpt: 32px;
+  --fs-poem: 18px;
+  --fs-section: 18px;
+  --fs-body: 15px;
+  --fs-meta: 13px;
+  --fs-result: 16px;
+  --fs-result-sub: 13px;
+  --fs-pending: 14px;
+  --fs-date: 12px;
+}
+
+/* 阅读字体随「字体」设置切换；界面文字保持 --font-ui */
+html[data-font="kai"] {
+  --font-reading: "Kaiti SC", "STKaiti", "KaiTi", "STSong", "SimSun", serif;
+}
+html[data-font="fang"] {
+  --font-reading: "FangSong", "STFangsong", "STSong", "SimSun", serif;
+}
+html[data-font="hei"] {
+  --font-reading: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans SC", system-ui, sans-serif;
+}
+html[data-font="huiwen"] {
+  --font-reading: "Huiwen-mincho", "Songti SC", "STSong", "SimSun", serif;
+}
+
+html[data-skin="bai"] {
+  --paper: #ffffff;
+  --ink: #26221d;
+  --muted: #8a8178;
+  --line: #e2ddd5;
+  --red: #8b1e1e;
+  --red-deep: #6e1515;
+  --gold: #b0894a;
+  --gold-line: rgba(176, 137, 74, 0.5);
+}
+html[data-skin="lv"] {
+  --paper: #e6efe3;
+  --ink: #26301f;
+  --muted: #6d7a60;
+  --line: #c9d6c4;
+  --red: #7a5c1e;
+  --red-deep: #5c4515;
+  --gold: #8a7a3c;
+  --gold-line: rgba(138, 122, 60, 0.5);
+}
+html[data-skin="zong"] {
+  --paper: #efe2d0;
+  --ink: #3a2a1a;
+  --muted: #8a7157;
+  --line: #dcc9ae;
+  --red: #8b3a1e;
+  --red-deep: #6e2c15;
+  --gold: #a97b3c;
+  --gold-line: rgba(169, 123, 60, 0.5);
+}
+html[data-skin="qian"] {
+  --paper: #f0f0ee;
+  --ink: #2b2b28;
+  --muted: #84847c;
+  --line: #d9d9d2;
+  --red: #7d2016;
+  --red-deep: #60180f;
+  --gold: #9c8a5a;
+  --gold-line: rgba(156, 138, 90, 0.5);
+}
+html[data-skin="ye"] {
+  --paper: #1c1814;
+  --ink: #efe6d6;
+  --muted: #b5a898;
+  --line: #3d342c;
+  --red: #d4a08a;
+  --red-deep: #c48b72;
+  --gold: #c4a36a;
+  --gold-line: rgba(196, 163, 106, 0.5);
+}
+html[data-skin="hong"] {
+  --paper: #5c1522;   /* 绛红底 */
+  --ink: #e8c96a;     /* 烫金正文 */
+  --muted: #c9a05c;   /* 暗金辅助 */
+  --line: #8a3a44;    /* 红金分隔线 */
+  --red: #e8c96a;     /* 强调=烫金（按钮/标题/图标） */
+  --red-deep: #d4b25a;
+  --gold: #f0d68a;    /* 亮金装饰 */
+  --gold-line: rgba(240, 214, 138, 0.5);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  background: #2b241f;
+  color: var(--ink);
+}
+
+.stage {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  padding: 0;
+}
+
+.phone {
+  width: 100%;
+  max-width: var(--phone);
+  min-height: 100vh;
+  background: var(--paper);
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--ink);
+}
+.phone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+}
+/* 原 ::after 内金线框已删除：它浮在内容之上，滚动时文字会从边框线下穿过造成重叠错位。
+   手机壳外框（.phone 的 border/box-shadow）保留，不随内容滚动，无此问题。 */
+.phone > *:not(.toast) { position: relative; z-index: 1; }
+html[data-bg="custom"] .phone::before {
+  background-image: var(--custom-bg);
+  opacity: var(--bg-opacity);
+}
+
+@media (min-width: 520px) {
+  .stage {
+    align-items: center;
+    padding: 24px 0;
+    background:
+      radial-gradient(ellipse at center, #3a312a 0%, #1a1613 70%);
+  }
+  .phone {
+    min-height: 780px;
+    height: 844px;
+    border-radius: 28px;
+    border: 1.5px solid var(--gold);
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(176, 137, 74, 0.25);
+  }
+  .phone::before {
+    border-radius: 18px;
+  }
+}
+
+.view {
+  padding: 8px 24px 32px;
+  min-height: calc(100% - 32px);
+}
+.view:not(.hidden) {
+  animation: view-in 0.28s ease;
+}
+@keyframes view-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.hidden { display: none !important; }
+
+.brand {
+  margin: 48px 0 0;
+  line-height: 1; /* 品牌行高=字高，便于右上角图标与其垂直中心对齐 */
+  text-align: center;
+  letter-spacing: 0.12em;
+  color: var(--red);
+  font-family: "草檀斋毛泽东字体", "CTZMZD", "Liu Jian Mao Cao", "Huiwen-mincho", var(--font-ui);
+  font-size: 28px;
+  font-weight: 400;
+  transition: opacity 0.28s ease;
+}
+
+.excerpt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin: 88px 0 0;
+  padding: 28px 8px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-family: var(--font-reading); /* 诗句用阅读字体；毛体只保留在 .brand「星火」二字 */
+  font-size: var(--fs-excerpt);
+  font-weight: 400;
+  line-height: 1.7;
+  text-align: center;
+  color: var(--ink);
+  cursor: pointer;
+  transition: opacity 0.28s ease;
+}
+.ex-line { display: block; }
+.excerpt:active { opacity: 0.7; }
+html:not(.fonts-ready) .brand,
+html:not(.fonts-ready) .excerpt,
+html:not(.fonts-ready) .home-meta {
+  opacity: 0;
+}
+html.fonts-ready .brand,
+html.fonts-ready .excerpt,
+html.fonts-ready .home-meta {
+  opacity: 1;
+}
+html.fonts-ready .excerpt.is-fading {
+  opacity: 0;
+}
+
+/* 首页顶部装饰：一条断口横线 + 五角星（用户确认版：去掉左右与底部边框，仅保留顶线）
+   断口实现：容器无边框，左右两段短线由 ::before/::after 画出，中间留出星宽 + 两侧空隙。 */
+.home-frame {
+  position: absolute;
+  top: 24px;
+  left: 16px;
+  right: 16px;
+  height: 0; /* 纯定位容器，无边框 */
+  pointer-events: none;
+  z-index: 0;
+}
+.home-frame::before,
+.home-frame::after {
+  content: "";
+  position: absolute;
+  top: -1px; /* 2px 线中心对齐 24px，与星中心一致 */
+  height: 2px;
+  width: calc(50% - 37px); /* 断口 54px：星 34px + 两侧各 10px */
+  background: var(--gold-line);
+  border-radius: 2px;
+}
+.home-frame::before { left: 10px; }
+.home-frame::after { right: 10px; }
+.home-star {
+  position: absolute;
+  top: -17px; /* 星中心对齐断口线（框顶 24px 处），略低于原 -21px */
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  transform: translateX(-50%);
+  fill: var(--paper);
+  stroke: var(--gold);
+  stroke-width: 2.2;
+  z-index: 1;
+  pointer-events: none;
+}
+.home-star .star-inner {
+  transform: scale(0.52);
+  transform-origin: 12px 12px;
+  transform-box: view-box; /* 兼容旧浏览器 SVG transform-origin */
+  fill: var(--gold);
+  stroke: none;
+}
+/* 自定义背景图时外星不填充（否则成纸色实心补丁），只保留描边与内星 */
+html[data-bg="custom"] .home-star {
+  fill: none;
+}
+/* 首页右上角：☆ 快速收藏 + ☰ 我的，并排。
+   位置：与品牌字「星火」同一水平线（垂直中心对齐，不压断口横线），呈标题栏式布局。
+   计算：.view padding-top 8px + .brand margin-top 48px = 品牌顶部 56px；28px 字高中心 = 70px；
+   图标 40px 高 → top = 70 - 20 = 50px（注意包含块是 .phone，不是 .view） */
+.top-icons {
+  position: absolute;
+  top: 50px;
+  right: 16px;
+  z-index: 2; /* 高于 .brand(z-index:1)：brand 是块级透明盒子，会挡住图标下半部分点击 */
+  display: flex;
+  gap: 2px;
+}
+.top-icons .icon-btn {
+  width: 40px;
+  height: 40px;
+  padding: 8px 0;
+}
+.top-icons .icon-btn svg {
+  width: 24px;
+  height: 24px;
+}
+.top-icons .icon-btn.on svg {
+  fill: currentColor;
+  stroke: currentColor;
+  color: var(--gold);
+}
+#view-home > .brand,
+#view-home > .excerpt,
+#view-home > .home-meta {
+  position: relative;
+  z-index: 1;
+}
+
+/* 首页诗句下方：作品名 + 写作日期（中文数字）两行小字 */
+.home-meta {
+  margin: 52px 0 0;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.9;
+  transition: opacity 0.28s ease;
+}
+html.fonts-ready .home-meta.is-fading {
+  opacity: 0;
+}
+.home-title {
+  font-family: var(--font-reading);
+  font-size: var(--fs-meta);
+  letter-spacing: 0.18em;
+}
+.home-date {
+  font-family: var(--font-reading);
+  font-size: var(--fs-date);
+  letter-spacing: 0.14em;
+}
+
+.home-actions {
+  display: flex;
+  gap: 12px;
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 76px;
+  z-index: 1;
+}
+
+.btn {
+  flex: 1;
+  height: 48px;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+}
+.btn.primary {
+  background: var(--red);
+  color: var(--paper);
+  border: 0;
+}
+.btn.primary:active { background: var(--red-deep); }
+.btn.ghost {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  align-items: center;
+  padding: 8px 0 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+#view-detail .topbar {
+  grid-template-columns: 64px 1fr auto;
+}
+.top-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.topbar h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 8px;
+}
+.back, .icon-btn {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--red);
+  padding: 8px 0;
+  cursor: pointer;
+}
+.back { text-align: left; }
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.star.on svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+#q {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--ink);
+  outline: none;
+  margin-bottom: 12px;
+}
+.results { list-style: none; padding: 0; margin: 0; }
+.results li button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.results .t { display: block; font-size: var(--fs-result); font-weight: 700; }
+.results .e { display: block; color: var(--muted); font-size: var(--fs-result-sub); font-weight: 400; margin-top: 4px; }
+.empty { color: var(--muted); padding: 24px 0; text-align: center; }
+
+.detail { padding-bottom: 48px; padding-top: 4px; }
+.meta {
+  font-family: var(--font-reading);
+  color: var(--muted);
+  font-size: var(--fs-meta);
+  font-weight: 400;
+  text-align: center;
+  margin: 0 0 20px;
+  letter-spacing: 0.08em;
+}
+.poem {
+  font-family: var(--font-reading);
+  font-size: var(--fs-poem);
+  font-weight: 400;
+  line-height: 2.2;
+  text-align: center;
+  margin: 12px 12px 64px;
+  color: var(--ink);
+  letter-spacing: 0.04em;
+}
+.section-title {
+  font-family: var(--font-reading);
+  font-size: var(--fs-section);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--red);
+  border-left: 3px solid var(--red);
+  padding-left: 10px;
+  margin: 40px 0 14px;
+}
+.poem + .section-title {
+  margin-top: 8px;
+}
+.section-body {
+  font-family: var(--font-reading);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: 1.95;
+  color: var(--ink);
+}
+.section-body p { margin: 0 0 14px; }
+.pending {
+  color: var(--muted);
+  font-size: var(--fs-pending);
+  font-weight: 400;
+  line-height: 1.7;
+}
+.sources {
+  font-family: var(--font-reading);
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.slider-row input {
+  flex: 1;
+  accent-color: var(--red);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.chips button {
+  flex: 1 1 28%;
+  min-width: 64px;
+  height: 40px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+#font-chips button {
+  flex: 0 1 22%; /* 不拉满：第 5 枚换行时保持与其他芯片等宽 */
+  min-width: 0;
+  font-size: 13px;
+}
+.chips button.on {
+  border-color: var(--red);
+  color: var(--red);
+  font-weight: 700;
+}
+
+/* 皮肤调色盘：圆形色块，每块显示该皮肤的实际纸色 */
+.skin-chips {
+  gap: 12px;
+}
+.skin-chips button {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  min-width: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+}
+.skin-dot[data-skin="xuan"] { background: #f4efe4; }
+.skin-dot[data-skin="bai"] { background: #ffffff; }
+.skin-dot[data-skin="lv"] { background: #e6efe3; }
+.skin-dot[data-skin="zong"] { background: #efe2d0; }
+.skin-dot[data-skin="qian"] { background: #f0f0ee; }
+.skin-dot[data-skin="ye"] { background: #1c1814; }
+.skin-dot[data-skin="hong"] { background: #5c1522; }
+.skin-chips button.on {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--red);
+}
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+  z-index: 30;
+  padding: 8px 16px;
+  background: rgba(28, 22, 18, 0.9);
+  color: #f4efe4;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.toast.show { opacity: 1; }
+html[data-skin="ye"] .toast {
+  background: rgba(239, 230, 214, 0.92);
+  color: #1c1814;
+}
+html[data-skin="hong"] .toast {
+  background: rgba(20, 8, 12, 0.92); /* 绛红皮肤的提示：深红近黑底 + 烫金字 */
+  color: #f0d68a;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* ===== 「我的」页 ===== */
+.mine {
+  padding-top: 4px;
+  padding-bottom: 48px;
+}
+.mine-label {
+  margin: 22px 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: var(--muted);
+}
+.mine-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 15px 2px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+.mine-row:active { opacity: 0.6; }
+.mine-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+.mine-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.mine-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mine-icon svg text {
+  stroke: none;
+  fill: currentColor;
+  font-family: var(--font-ui);
+  font-weight: 700;
+}
+.mine-summary {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mine-arrow {
+  color: var(--muted);
+  font-size: 18px;
+  padding-left: 8px;
+}
+
+/* ===== 收藏页：Tab + 管理 ===== */
+.saved-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.saved-tabs button {
+  flex: 1;
+  height: 40px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+}
+.saved-tabs button.on {
+  border-color: var(--red);
+  color: var(--red);
+  font-weight: 700;
+}
+.link-btn {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--red);
+  padding: 8px 0;
+  cursor: pointer;
+  justify-self: end;
+}
+.results .d {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 4px;
+  text-align: right;
+}
+.saved-list li {
+  display: flex;
+  align-items: center;
+}
+.saved-list li .check {
+  flex: 0 0 22px;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--line);
+  border-radius: 50%;
+  margin-right: 10px;
+  position: relative;
+}
+.saved-list li .check.on {
+  border-color: var(--red);
+  background: var(--red);
+}
+.saved-list li .check.on::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+/* 收藏页：管理栏固定在底部（进入管理态才出现） */
+#view-saved:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 40px);
+}
+#view-saved .saved-list {
+  flex: 1;
+}
+.manage-bar {
+  position: sticky;
+  bottom: 0;
+  flex-shrink: 0;
+  display: flex;
+  gap: 10px;
+  padding: 10px 0 4px;
+  background: var(--paper);
+}
+.manage-bar button {
+  flex: 1;
+  height: 44px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.manage-bar button:last-child {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* ===== 关于页 ===== */
+.about-hero {
+  text-align: center;
+  padding: 12px 0 8px;
+}
+.about-brand {
+  font-size: 30px;
+}
+.about-ver {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 6px 0 10px;
+}
+.about-tagline {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 0 0 8px;
+  padding: 0 12px;
+}
+
+/* ===== 设置子页 ===== */
+.set-page {
+  padding-top: 8px;
+  padding-bottom: 48px;
+}
+/* 字体按钮：固定用自身字体族展示，不随全局阅读字体变；用 ID+类选择器确保字号不被 #font-chips button 覆盖。
+   flex 不拉伸（grow:0）：5 枚呈 3+2 等宽排列，避免第二行按钮被拉宽导致二字按钮（黑体）稀疏 */
+#font-chips.font-list button {
+  flex: 0 1 30%;
+  height: 52px;
+  font-size: 17px;
+}
+#font-chips.font-list button[data-font="song"] { font-family: "Songti SC", "STSong", "SimSun", serif; }
+#font-chips.font-list button[data-font="kai"] { font-family: "Kaiti SC", "STKaiti", "KaiTi", "Songti SC", serif; }
+#font-chips.font-list button[data-font="fang"] { font-family: "FangSong", "STFangsong", "Songti SC", serif; }
+#font-chips.font-list button[data-font="hei"] { font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, sans-serif; }
+#font-chips.font-list button[data-font="huiwen"] { font-family: "Huiwen-mincho", "Songti SC", "STSong", serif; }
+.skin-list button {
+  width: 52px;
+  height: 52px;
+}
+.size-page-row {
+  margin: 10px 0 0;
+}
+
+/* ===== 文档页（隐私政策/帮助） ===== */
+.doc {
+  padding-bottom: 48px;
+  padding-top: 4px;
+}
+.doc p {
+  font-size: 15px; /* 固定：隐私/帮助属界面文档，不随阅读字号缩放 */
+  font-weight: 400;
+  line-height: 1.95;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+

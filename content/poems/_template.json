@@ -1,0 +1,22 @@
+{
+  "order": 99,
+  "id": "example-id",
+  "title": "词牌·诗题",
+  "form": "词",
+  "date": "19xx年x月",
+  "place": "写作地点",
+  "originalTitle": "",
+  "excerpt": "代表句（可选，用于搜索列表；首页随机展示由程序从 lines 中按句号单位抽取）",
+  "lines": [
+    "全诗分行，每行一句（一联），句号结尾，必须完整。"
+  ],
+  "searchText": "检索用：诗题 名句 地名",
+  "complete": false,
+  "background": [],
+  "interpretation": [],
+  "sources": [
+    "《毛泽东年谱》，xxxx年x月条",
+    "《毛泽东传》，逢先知、金冲及，相关章节",
+    "《毛泽东诗词全编鉴赏》，本篇考辨、注释与赏析"
+  ]
+}

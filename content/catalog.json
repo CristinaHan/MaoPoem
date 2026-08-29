@@ -1,0 +1,1339 @@
+{
+  "product": "毛诗",
+  "note": "这是编辑队列，不是运行时自动写稿。App 只读 content/poems 里已经写完、再编进 web/data/poems.js 的记录。",
+  "sources": {
+    "鉴赏": "data/_extracted/毛泽东诗词全编鉴赏",
+    "年谱": "data/_extracted/《毛泽东年谱(全九卷)》",
+    "传记": "data/_extracted/毛泽东传 (逢先知, 金冲及, 中共中央文献硏究室)"
+  },
+  "counts": {
+    "catalog": 63,
+    "published": 8,
+    "queued": 55
+  },
+  "poems": [
+    {
+      "id": "he-xin-lang",
+      "title": "贺新郎·别友",
+      "tocTitle": "贺新郎",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0007.xhtml#b001",
+        "kaobian": "OEBPS/Text/part0007.xhtml#c001",
+        "essays": [
+          {
+            "title": "熔婉约与豪放于一炉",
+            "src": "OEBPS/Text/part0007.xhtml#c002"
+          }
+        ]
+      }
+    },
+    {
+      "id": "changsha",
+      "title": "沁园春·长沙",
+      "tocTitle": "沁园春 长沙",
+      "form": "词",
+      "section": "正编",
+      "status": "published",
+      "file": "poems/changsha.json",
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0008.xhtml",
+        "kaobian": "OEBPS/Text/part0008.xhtml#c003",
+        "essays": [
+          {
+            "title": "问苍茫大地谁主沉浮",
+            "src": "OEBPS/Text/part0008.xhtml#c004"
+          }
+        ]
+      }
+    },
+    {
+      "id": "huanghelou",
+      "title": "菩萨蛮·黄鹤楼",
+      "tocTitle": "菩萨蛮 黄鹤楼",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0009.xhtml",
+        "kaobian": "OEBPS/Text/part0009.xhtml#c005",
+        "essays": [
+          {
+            "title": "掌上千秋史诗笔绘华章",
+            "src": "OEBPS/Text/part0009.xhtml#c006"
+          }
+        ]
+      }
+    },
+    {
+      "id": "jinggangshan",
+      "title": "西江月·井冈山",
+      "tocTitle": "西江月 井冈山",
+      "form": "词",
+      "section": "正编",
+      "status": "published",
+      "file": "poems/jinggangshan.json",
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0010.xhtml",
+        "kaobian": "OEBPS/Text/part0010.xhtml#c007",
+        "essays": [
+          {
+            "title": "诗情画意描战场",
+            "src": "OEBPS/Text/part0010.xhtml#c008"
+          }
+        ]
+      }
+    },
+    {
+      "id": "jianggui",
+      "title": "清平乐·蒋桂战争",
+      "tocTitle": "清平乐 蒋桂战争",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0011.xhtml",
+        "kaobian": "OEBPS/Text/part0011.xhtml#c009",
+        "essays": [
+          {
+            "title": "风云突变红旗跃",
+            "src": "OEBPS/Text/part0011.xhtml#c010"
+          }
+        ]
+      }
+    },
+    {
+      "id": "chongyang",
+      "title": "采桑子·重阳",
+      "tocTitle": "采桑子 重阳",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0012.xhtml",
+        "kaobian": "OEBPS/Text/part0012.xhtml#c011",
+        "essays": [
+          {
+            "title": "革命人生的壮美颂歌",
+            "src": "OEBPS/Text/part0012.xhtml#c012"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yuandan",
+      "title": "如梦令·元旦",
+      "tocTitle": "如梦令 元旦",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0013.xhtml",
+        "kaobian": "OEBPS/Text/part0013.xhtml#c013",
+        "essays": [
+          {
+            "title": "意象的奇妙组合",
+            "src": "OEBPS/Text/part0013.xhtml#c014"
+          }
+        ]
+      }
+    },
+    {
+      "id": "guangchang",
+      "title": "减字木兰花·广昌路上",
+      "tocTitle": "减字木兰花 广昌路上",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0014.xhtml",
+        "kaobian": "OEBPS/Text/part0014.xhtml#c015",
+        "essays": [
+          {
+            "title": "白雪·红旗·过大关",
+            "src": "OEBPS/Text/part0014.xhtml#c016"
+          }
+        ]
+      }
+    },
+    {
+      "id": "tingzhou",
+      "title": "蝶恋花·从汀州向长沙",
+      "tocTitle": "蝶恋花 从汀州向长沙",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0015.xhtml",
+        "kaobian": "OEBPS/Text/part0015.xhtml#c017",
+        "essays": [
+          {
+            "title": "狂飙颂",
+            "src": "OEBPS/Text/part0015.xhtml#c018"
+          }
+        ]
+      }
+    },
+    {
+      "id": "weijiao-1",
+      "title": "渔家傲·反第一次大“围剿”",
+      "tocTitle": "渔家傲 反第一次大“围剿”",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0016.xhtml",
+        "kaobian": "OEBPS/Text/part0016.xhtml#c019",
+        "essays": [
+          {
+            "title": "大气磅礴的战歌",
+            "src": "OEBPS/Text/part0016.xhtml#c020"
+          }
+        ]
+      }
+    },
+    {
+      "id": "weijiao-2",
+      "title": "渔家傲·反第二次大“围剿”",
+      "tocTitle": "渔家傲 反第二次大“围剿”",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0017.xhtml",
+        "kaobian": "OEBPS/Text/part0017.xhtml#c021",
+        "essays": [
+          {
+            "title": "辉煌的诗史壮丽的史诗",
+            "src": "OEBPS/Text/part0017.xhtml#c022"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dabaidi",
+      "title": "菩萨蛮·大柏地",
+      "tocTitle": "菩萨蛮 大柏地",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0018.xhtml",
+        "kaobian": "OEBPS/Text/part0018.xhtml#c023",
+        "essays": [
+          {
+            "title": "无产阶级革命家笔下的战场画面",
+            "src": "OEBPS/Text/part0018.xhtml#c024"
+          }
+        ]
+      }
+    },
+    {
+      "id": "huichang",
+      "title": "清平乐·会昌",
+      "tocTitle": "清平乐 会昌",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0019.xhtml",
+        "kaobian": "OEBPS/Text/part0019.xhtml#c025",
+        "essays": [
+          {
+            "title": "为中国的革命气节而骄傲",
+            "src": "OEBPS/Text/part0019.xhtml#c026"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shiliu-zi-ling",
+      "title": "十六字令三首",
+      "tocTitle": "十六字令三首",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0020.xhtml",
+        "kaobian": "OEBPS/Text/part0020.xhtml#c027",
+        "essays": [
+          {
+            "title": "独具“化美为媚”的美学魅力",
+            "src": "OEBPS/Text/part0020.xhtml#c028"
+          }
+        ]
+      }
+    },
+    {
+      "id": "loushanguan",
+      "title": "忆秦娥·娄山关",
+      "tocTitle": "忆秦娥 娄山关",
+      "form": "词",
+      "section": "正编",
+      "status": "published",
+      "file": "poems/loushanguan.json",
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0021.xhtml",
+        "kaobian": "OEBPS/Text/part0021.xhtml#c029",
+        "essays": [
+          {
+            "title": "沉郁中的壮思",
+            "src": "OEBPS/Text/part0021.xhtml#c030"
+          }
+        ]
+      }
+    },
+    {
+      "id": "changzheng",
+      "title": "七律·长征",
+      "tocTitle": "七律 长征",
+      "form": "七律",
+      "section": "正编",
+      "status": "published",
+      "file": "poems/changzheng.json",
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0022.xhtml",
+        "kaobian": "OEBPS/Text/part0022.xhtml#c031",
+        "essays": [
+          {
+            "title": "挑战者之歌",
+            "src": "OEBPS/Text/part0022.xhtml#c032"
+          }
+        ]
+      }
+    },
+    {
+      "id": "kunlun",
+      "title": "念奴娇·昆仑",
+      "tocTitle": "念奴娇 昆仑",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0023.xhtml",
+        "kaobian": "OEBPS/Text/part0023.xhtml#c033",
+        "essays": [
+          {
+            "title": "“昆仑”——自然的人化",
+            "src": "OEBPS/Text/part0023.xhtml#c034"
+          }
+        ]
+      }
+    },
+    {
+      "id": "liupanshan",
+      "title": "清平乐·六盘山",
+      "tocTitle": "清平乐 六盘山",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0024.xhtml",
+        "kaobian": "OEBPS/Text/part0024.xhtml#c035",
+        "essays": [
+          {
+            "title": "再长征的号角",
+            "src": "OEBPS/Text/part0024.xhtml#c036"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xue",
+      "title": "沁园春·雪",
+      "tocTitle": "沁园春 雪",
+      "form": "词",
+      "section": "正编",
+      "status": "published",
+      "file": "poems/xue.json",
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0025.xhtml",
+        "kaobian": "OEBPS/Text/part0025.xhtml#c037",
+        "essays": [
+          {
+            "title": "雄视千古",
+            "src": "OEBPS/Text/part0025.xhtml#c038"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nanjing",
+      "title": "七律·人民解放军占领南京",
+      "tocTitle": "七律 人民解放军占领南京",
+      "form": "七律",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0026.xhtml",
+        "kaobian": "OEBPS/Text/part0026.xhtml#c039",
+        "essays": [
+          {
+            "title": "“人间正道是沧桑”",
+            "src": "OEBPS/Text/part0026.xhtml#c040"
+          }
+        ]
+      }
+    },
+    {
+      "id": "he-liuyazi",
+      "title": "七律·和柳亚子先生",
+      "tocTitle": "七律 和柳亚子先生",
+      "form": "七律",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0027.xhtml",
+        "kaobian": "OEBPS/Text/part0027.xhtml#c041",
+        "essays": [
+          {
+            "title": "意深语畅，跌宕生姿",
+            "src": "OEBPS/Text/part0027.xhtml#c042"
+          }
+        ]
+      }
+    },
+    {
+      "id": "huanxisha-he-liuyazi",
+      "title": "浣溪沙·和柳亚子先生",
+      "tocTitle": "浣溪沙 和柳亚子先生",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0028.xhtml",
+        "kaobian": "OEBPS/Text/part0028.xhtml#c043",
+        "essays": [
+          {
+            "title": "开国纪盛话新旧",
+            "src": "OEBPS/Text/part0028.xhtml#c044"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beidaihe",
+      "title": "浪淘沙·北戴河",
+      "tocTitle": "浪淘沙 北戴河",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0029.xhtml",
+        "kaobian": "OEBPS/Text/part0029.xhtml#c045",
+        "essays": [
+          {
+            "title": "观海则意溢于海",
+            "src": "OEBPS/Text/part0029.xhtml#c046"
+          }
+        ]
+      }
+    },
+    {
+      "id": "youyong",
+      "title": "水调歌头·游泳",
+      "tocTitle": "水调歌头 游泳",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0030.xhtml",
+        "kaobian": "OEBPS/Text/part0030.xhtml#c047",
+        "essays": [
+          {
+            "title": "宏伟建设的畅想曲",
+            "src": "OEBPS/Text/part0030.xhtml#c048"
+          }
+        ]
+      }
+    },
+    {
+      "id": "da-lishuyi",
+      "title": "蝶恋花·答李淑一",
+      "tocTitle": "蝶恋花 答李淑一",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0031.xhtml",
+        "kaobian": "OEBPS/Text/part0031.xhtml#c049",
+        "essays": [
+          {
+            "title": "植根深厚而超迈古今",
+            "src": "OEBPS/Text/part0031.xhtml#c050"
+          }
+        ]
+      }
+    },
+    {
+      "id": "song-wenshen",
+      "title": "七律二首·送瘟神",
+      "tocTitle": "七律二首 送瘟神",
+      "form": "七律二首",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0032.xhtml",
+        "kaobian": "OEBPS/Text/part0032.xhtml#c051",
+        "essays": [
+          {
+            "title": "社会主义建设时期的“送神曲”",
+            "src": "OEBPS/Text/part0032.xhtml#c052"
+          }
+        ]
+      }
+    },
+    {
+      "id": "shaoshan",
+      "title": "七律·到韶山",
+      "tocTitle": "七律 到韶山",
+      "form": "七律",
+      "section": "正编",
+      "status": "published",
+      "file": "poems/shaoshan.json",
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0033.xhtml",
+        "kaobian": "OEBPS/Text/part0033.xhtml#c053",
+        "essays": [
+          {
+            "title": "故乡行中华情",
+            "src": "OEBPS/Text/part0033.xhtml#c054"
+          }
+        ]
+      }
+    },
+    {
+      "id": "lushan",
+      "title": "七律·登庐山",
+      "tocTitle": "七律 登庐山",
+      "form": "七律",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0034.xhtml",
+        "kaobian": "OEBPS/Text/part0034.xhtml#c055",
+        "essays": [
+          {
+            "title": "时代巨人的襟怀历史潮流的赞歌",
+            "src": "OEBPS/Text/part0034.xhtml#c056"
+          }
+        ]
+      }
+    },
+    {
+      "id": "nvminbing",
+      "title": "七绝·为女民兵题照",
+      "tocTitle": "七绝 为女民兵题照",
+      "form": "七绝",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0035.xhtml",
+        "kaobian": "OEBPS/Text/part0035.xhtml#c057",
+        "essays": [
+          {
+            "title": "畅晓见蕴藉坦陈更雄豪",
+            "src": "OEBPS/Text/part0035.xhtml#c058"
+          }
+        ]
+      }
+    },
+    {
+      "id": "da-youren",
+      "title": "七律·答友人",
+      "tocTitle": "七律 答友人",
+      "form": "七律",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0036.xhtml",
+        "kaobian": "OEBPS/Text/part0036.xhtml#c059",
+        "essays": [
+          {
+            "title": "情意洞幽赋寥廓",
+            "src": "OEBPS/Text/part0036.xhtml#c060"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xianrendong",
+      "title": "七绝·为李进同志题所摄庐山仙人洞照",
+      "tocTitle": "七绝 为李进同志题所摄庐山仙人洞照",
+      "form": "七绝",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0037.xhtml",
+        "kaobian": "OEBPS/Text/part0037.xhtml#c061",
+        "essays": [
+          {
+            "title": "奇松云海托真情",
+            "src": "OEBPS/Text/part0037.xhtml#c062"
+          }
+        ]
+      }
+    },
+    {
+      "id": "he-guomoro",
+      "title": "七律·和郭沫若同志",
+      "tocTitle": "七律 和郭沫若同志",
+      "form": "七律",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0038.xhtml",
+        "kaobian": "OEBPS/Text/part0038.xhtml#c063",
+        "essays": [
+          {
+            "title": "“打鬼”颂“金猴”",
+            "src": "OEBPS/Text/part0038.xhtml#c064"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yongmei",
+      "title": "卜算子·咏梅",
+      "tocTitle": "卜算子 咏梅",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0039.xhtml",
+        "kaobian": "OEBPS/Text/part0039.xhtml#c065",
+        "essays": [
+          {
+            "title": "风流标格首开奇响",
+            "src": "OEBPS/Text/part0039.xhtml#c066"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dongyun",
+      "title": "七律·冬云",
+      "tocTitle": "七律 冬云",
+      "form": "七律",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0040.xhtml",
+        "kaobian": "OEBPS/Text/part0040.xhtml#c067",
+        "essays": [
+          {
+            "title": "雄奇豪迈气贯长虹",
+            "src": "OEBPS/Text/part0040.xhtml#c068"
+          }
+        ]
+      }
+    },
+    {
+      "id": "manjianghong-he-guomoro",
+      "title": "满江红·和郭沫若同志",
+      "tocTitle": "满江红 和郭沫若同志",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0041.xhtml",
+        "kaobian": "OEBPS/Text/part0041.xhtml#c069",
+        "essays": [
+          {
+            "title": "气吞八荒光耀千古",
+            "src": "OEBPS/Text/part0041.xhtml#c070"
+          }
+        ]
+      }
+    },
+    {
+      "id": "diao-luoronghuan",
+      "title": "七律·吊罗荣桓同志",
+      "tocTitle": "七律 吊罗荣桓同志",
+      "form": "七律",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0042.xhtml",
+        "kaobian": "OEBPS/Text/part0042.xhtml#c071",
+        "essays": [
+          {
+            "title": "亦哭亦诉悼战友",
+            "src": "OEBPS/Text/part0042.xhtml#c072"
+          }
+        ]
+      }
+    },
+    {
+      "id": "dushi",
+      "title": "贺新郎·读史",
+      "tocTitle": "贺新郎 读史",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0043.xhtml",
+        "kaobian": "OEBPS/Text/part0043.xhtml#c073",
+        "essays": [
+          {
+            "title": "藻耀而高翔文笔之鸣凤",
+            "src": "OEBPS/Text/part0043.xhtml#c074"
+          }
+        ]
+      }
+    },
+    {
+      "id": "chongshang-jinggangshan",
+      "title": "水调歌头·重上井冈山",
+      "tocTitle": "水调歌头 重上井冈山",
+      "form": "词",
+      "section": "正编",
+      "status": "published",
+      "file": "poems/chongshang-jinggangshan.json",
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0044.xhtml",
+        "kaobian": "OEBPS/Text/part0044.xhtml#c075",
+        "essays": [
+          {
+            "title": "双关的思想内涵隐秀的艺术标本",
+            "src": "OEBPS/Text/part0044.xhtml#c076"
+          }
+        ]
+      }
+    },
+    {
+      "id": "niaoer-wenda",
+      "title": "念奴娇·鸟儿问答",
+      "tocTitle": "念奴娇 鸟儿问答",
+      "form": "词",
+      "section": "正编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0045.xhtml",
+        "kaobian": "OEBPS/Text/part0045.xhtml#c077",
+        "essays": [
+          {
+            "title": "生动形象寓意深刻",
+            "src": "OEBPS/Text/part0045.xhtml#c078"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wan-yichangtao",
+      "title": "五古·挽易昌陶",
+      "tocTitle": "五古",
+      "form": "五古",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0046.xhtml#b040",
+        "kaobian": "OEBPS/Text/part0046.xhtml#c079",
+        "essays": [
+          {
+            "title": "赞美好友怀念故人",
+            "src": "OEBPS/Text/part0046.xhtml#c080"
+          }
+        ]
+      }
+    },
+    {
+      "id": "song-zongyu",
+      "title": "七古·送纵宇一郎东行",
+      "tocTitle": "七古 送纵宇一郎东行",
+      "form": "七古",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0047.xhtml",
+        "kaobian": "OEBPS/Text/part0047.xhtml#c081",
+        "essays": [
+          {
+            "title": "视宇宙如稊米展鹏翼而击浪",
+            "src": "OEBPS/Text/part0047.xhtml#c082"
+          }
+        ]
+      }
+    },
+    {
+      "id": "zhenshang",
+      "title": "虞美人·枕上",
+      "tocTitle": "虞美人 枕上",
+      "form": "词",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0048.xhtml",
+        "kaobian": "OEBPS/Text/part0048.xhtml#c083",
+        "essays": [
+          {
+            "title": "无情未必真豪杰多情亦是大丈夫",
+            "src": "OEBPS/Text/part0048.xhtml#c084"
+          }
+        ]
+      }
+    },
+    {
+      "id": "qiushou",
+      "title": "西江月·秋收起义",
+      "tocTitle": "西江月 秋收起义",
+      "form": "词",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0049.xhtml",
+        "kaobian": "OEBPS/Text/part0049.xhtml#c085",
+        "essays": [
+          {
+            "title": "千秋暴动第一诗",
+            "src": "OEBPS/Text/part0049.xhtml#c086"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gei-pengdehuai",
+      "title": "六言诗·给彭德怀同志",
+      "tocTitle": "六言诗 给彭德怀同志",
+      "form": "六言诗",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0050.xhtml",
+        "kaobian": "OEBPS/Text/part0050.xhtml#c087",
+        "essays": [
+          {
+            "title": "油然发自肺腑的爱将歌",
+            "src": "OEBPS/Text/part0050.xhtml#c088"
+          }
+        ]
+      }
+    },
+    {
+      "id": "gei-dingling",
+      "title": "临江仙·给丁玲同志",
+      "tocTitle": "临江仙 给丁玲同志",
+      "form": "词",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0051.xhtml",
+        "kaobian": "OEBPS/Text/part0051.xhtml#c089",
+        "essays": [
+          {
+            "title": "友情·党情·国情",
+            "src": "OEBPS/Text/part0051.xhtml#c090"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wan-daianlan",
+      "title": "五律·挽戴安澜将军",
+      "tocTitle": "五律 挽戴安澜将军",
+      "form": "五律",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0052.xhtml",
+        "kaobian": "OEBPS/Text/part0052.xhtml#c091",
+        "essays": [
+          {
+            "title": "英雄的颂歌",
+            "src": "OEBPS/Text/part0052.xhtml#c092"
+          }
+        ]
+      }
+    },
+    {
+      "id": "zhangguandao",
+      "title": "五律·张冠道中",
+      "tocTitle": "五律 张冠道中",
+      "form": "五律",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0053.xhtml",
+        "kaobian": "OEBPS/Text/part0053.xhtml#c093",
+        "essays": [
+          {
+            "title": "陕北艰苦转战的真实写照",
+            "src": "OEBPS/Text/part0053.xhtml#c094"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xiwen-jiebao",
+      "title": "五律·喜闻捷报",
+      "tocTitle": "五律 喜闻捷报",
+      "form": "五律",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0054.xhtml",
+        "kaobian": "OEBPS/Text/part0054.xhtml#c095",
+        "essays": [
+          {
+            "title": "且行“秦塞”漫吟哦",
+            "src": "OEBPS/Text/part0054.xhtml#c096"
+          }
+        ]
+      }
+    },
+    {
+      "id": "huanxisha-miaoxiangshan",
+      "title": "浣溪沙·和柳亚子先生",
+      "tocTitle": "浣溪沙 和柳亚子先生",
+      "form": "词",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0055.xhtml",
+        "kaobian": "OEBPS/Text/part0055.xhtml#c097",
+        "essays": [
+          {
+            "title": "无个人之乐而有众人与共之喜",
+            "src": "OEBPS/Text/part0055.xhtml#c098"
+          }
+        ]
+      }
+    },
+    {
+      "id": "he-zhoushizhao",
+      "title": "七律·和周世钊同志",
+      "tocTitle": "七律 和周世钊同志",
+      "form": "七律",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0056.xhtml",
+        "kaobian": "OEBPS/Text/part0056.xhtml#c099",
+        "essays": [
+          {
+            "title": "赫曦春望寄情高",
+            "src": "OEBPS/Text/part0056.xhtml#c100"
+          }
+        ]
+      }
+    },
+    {
+      "id": "kanshan",
+      "title": "五律·看山",
+      "tocTitle": "五律 看山",
+      "form": "五律",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0057.xhtml",
+        "kaobian": "OEBPS/Text/part0057.xhtml#c101",
+        "essays": [
+          {
+            "title": "一篇富于形象的佳作",
+            "src": "OEBPS/Text/part0057.xhtml#c102"
+          }
+        ]
+      }
+    },
+    {
+      "id": "moganshan",
+      "title": "七绝·莫干山",
+      "tocTitle": "七绝 莫干山",
+      "form": "七绝",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0058.xhtml",
+        "kaobian": "OEBPS/Text/part0058.xhtml#c103",
+        "essays": [
+          {
+            "title": "游兴高昂情满于山",
+            "src": "OEBPS/Text/part0058.xhtml#c104"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wuyunshan",
+      "title": "七绝·五云山",
+      "tocTitle": "七绝 五云山",
+      "form": "七绝",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0059.xhtml",
+        "kaobian": "OEBPS/Text/part0059.xhtml#c105",
+        "essays": [
+          {
+            "title": "情人眼里出西施",
+            "src": "OEBPS/Text/part0059.xhtml#c106"
+          }
+        ]
+      }
+    },
+    {
+      "id": "guanchao",
+      "title": "七绝·观潮",
+      "tocTitle": "七绝 观潮",
+      "form": "七绝",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0060.xhtml",
+        "kaobian": "OEBPS/Text/part0060.xhtml#c107",
+        "essays": [
+          {
+            "title": "弄潮者的自我升华",
+            "src": "OEBPS/Text/part0060.xhtml#c108"
+          }
+        ]
+      }
+    },
+    {
+      "id": "liufen",
+      "title": "七绝·刘蕡",
+      "tocTitle": "七绝 刘■",
+      "form": "七绝",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0061.xhtml",
+        "kaobian": "OEBPS/Text/part0061.xhtml#c109",
+        "essays": [
+          {
+            "title": "呼唤新的时代精神的咏史诗",
+            "src": "OEBPS/Text/part0061.xhtml#c110"
+          }
+        ]
+      }
+    },
+    {
+      "id": "quyuan",
+      "title": "七绝·屈原",
+      "tocTitle": "七绝 屈原",
+      "form": "七绝",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0062.xhtml",
+        "kaobian": "OEBPS/Text/part0062.xhtml#c111",
+        "essays": [
+          {
+            "title": "千秋一阕英雄悲歌",
+            "src": "OEBPS/Text/part0062.xhtml#c112"
+          }
+        ]
+      }
+    },
+    {
+      "id": "jinian-luxun",
+      "title": "七绝二首·纪念鲁迅八十寿辰",
+      "tocTitle": "七绝二首 纪念鲁迅八十寿辰",
+      "form": "七绝二首",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0063.xhtml",
+        "kaobian": "OEBPS/Text/part0063.xhtml#c113",
+        "essays": [
+          {
+            "title": "“但见奔星劲有声”",
+            "src": "OEBPS/Text/part0063.xhtml#c114"
+          }
+        ]
+      }
+    },
+    {
+      "id": "balian-song",
+      "title": "杂言诗·八连颂",
+      "tocTitle": "杂言诗 八连颂",
+      "form": "杂言诗",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0064.xhtml",
+        "kaobian": "OEBPS/Text/part0064.xhtml#c115",
+        "essays": [
+          {
+            "title": "八连精神的热情礼赞",
+            "src": "OEBPS/Text/part0064.xhtml#c116"
+          }
+        ]
+      }
+    },
+    {
+      "id": "niannujiao-jinggangshan",
+      "title": "念奴娇·井冈山",
+      "tocTitle": "念奴娇 井冈山",
+      "form": "词",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0065.xhtml",
+        "kaobian": "OEBPS/Text/part0065.xhtml#c117",
+        "essays": [
+          {
+            "title": "望云不尽井冈情",
+            "src": "OEBPS/Text/part0065.xhtml#c118"
+          }
+        ]
+      }
+    },
+    {
+      "id": "hongdu",
+      "title": "七律·洪都",
+      "tocTitle": "七律 洪都",
+      "form": "七律",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0066.xhtml",
+        "kaobian": "OEBPS/Text/part0066.xhtml#c119",
+        "essays": [
+          {
+            "title": "雄图发英断大略驾群才——《七律·洪都》赏析吴开有",
+            "src": "OEBPS/Text/part0066.xhtml#c120"
+          }
+        ]
+      }
+    },
+    {
+      "id": "you-suo-si",
+      "title": "七律·有所思",
+      "tocTitle": "七律 有所思",
+      "form": "七律",
+      "section": "副编",
+      "status": "published",
+      "file": "poems/you-suo-si.json",
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0067.xhtml",
+        "kaobian": "OEBPS/Text/part0067.xhtml#c121",
+        "essays": [
+          {
+            "title": "所思的是故国和人民",
+            "src": "OEBPS/Text/part0067.xhtml#c122"
+          }
+        ]
+      }
+    },
+    {
+      "id": "jiayi",
+      "title": "七绝·贾谊",
+      "tocTitle": "七绝 贾谊",
+      "form": "七绝",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0068.xhtml",
+        "kaobian": "OEBPS/Text/part0068.xhtml#c123",
+        "essays": [
+          {
+            "title": "赞美与同情交织的诗人情怀",
+            "src": "OEBPS/Text/part0068.xhtml#c124"
+          }
+        ]
+      }
+    },
+    {
+      "id": "yong-jiayi",
+      "title": "七律·咏贾谊",
+      "tocTitle": "七律 咏贾谊",
+      "form": "七律",
+      "section": "副编",
+      "status": "queued",
+      "file": null,
+      "source": {
+        "book": "毛泽东诗词全编鉴赏",
+        "extracted": "data/_extracted/毛泽东诗词全编鉴赏",
+        "src": "OEBPS/Text/part0069.xhtml",
+        "kaobian": "OEBPS/Text/part0069.xhtml#c125",
+        "essays": [
+          {
+            "title": "千古同惜长沙傅",
+            "src": "OEBPS/Text/part0069.xhtml#c126"
+          }
+        ]
+      }
+    }
+  ]
+}

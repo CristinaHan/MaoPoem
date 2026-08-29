@@ -1,0 +1,17 @@
+# 素材库（编辑用：年谱/传记为出版物提取文本，版权原因不随代码分发；App 运行时也不读它）
+data/
+
+# 参考 APK / 安装包
+_ref_apk/
+*.apk*
+
+# 材料包（含鉴赏/年谱/传记原文摘录，版权原因不随代码分发）
+docs/材料包/
+
+# 临时与构建中间产物
+_tmp_catalog.json
+web/brand-crops/
+
+# 系统/编辑器
+.DS_Store
+Thumbs.db
