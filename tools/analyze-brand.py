@@ -9,12 +9,12 @@ print("尺寸:", im.size, "模式:", im.mode)
 rgb = im.convert("RGB")
 w, h = rgb.size
 
-# 颜色分布采样
+# 颜色分布采样（红底为暗红 #b00000，r≈176，阈值须 <176）
 red_px = white_px = other = 0
 for y in range(0, h, 8):
     for x in range(0, w, 8):
         r, g, b = rgb.getpixel((x, y))
-        if r > 200 and g < 120 and b < 120:
+        if r > 120 and g < 110 and b < 110:  # 暗红底：r 明显高、g/b 低
             red_px += 1
         elif r > 200 and g > 200 and b > 200:
             white_px += 1

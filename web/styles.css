@@ -278,7 +278,9 @@ html[data-bg="custom"] .home-star {
 /* 首页右上角：☆ 快速收藏 + ☰ 我的，并排。
    位置：与品牌字「星火」同一水平线（垂直中心对齐，不压断口横线），呈标题栏式布局。
    计算：.view padding-top 8px + .brand margin-top 48px = 品牌顶部 56px；28px 字高中心 = 70px；
-   图标 40px 高 → top = 70 - 20 = 50px（注意包含块是 .phone，不是 .view） */
+   图标 40px 高 → top = 70 - 20 = 50px。
+   注意：.phone > * 使 .view 成为定位元素（position:relative），本容器包含块是 .view；
+   .view 无偏移，top 值视觉上与相对 .phone 一致。 */
 .top-icons {
   position: absolute;
   top: 50px;
