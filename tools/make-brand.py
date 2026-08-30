@@ -38,6 +38,16 @@ canvas.paste(fire, (star.width + GAP, (H - fire.height) // 2), fire)
 canvas.save("web/brand.png")
 print(f"生成 web/brand.png：{canvas.size}，星宽 {star.width} 高 {star.height}，火宽 {fire.width} 高 {fire.height}")
 
+# 同步输出内嵌 dataURL（web/brand-data.js）：file:// 下 canvas 绘制本地图片会污染导致 toBlob 报错，
+# 存图功能用 dataURL 绘制品牌图；brand.png 更新后必须同步此文件（本脚本自动完成）
+import base64
+with open("web/brand.png", "rb") as f:
+    b64 = base64.b64encode(f.read()).decode("ascii")
+with open("web/brand-data.js", "w", encoding="utf-8") as f:
+    f.write('// 品牌图 dataURL 内嵌（由 tools/make-brand.py 生成，勿手改；brand.png 更新后重新生成）\n')
+    f.write('var BRAND_DATA = "data:image/png;base64,' + b64 + '";\n')
+print(f"同步 web/brand-data.js（{len(b64)} base64 字符）")
+
 # 校验：透明占比与红字占比
 px = canvas.load()
 transparent = red_px = 0

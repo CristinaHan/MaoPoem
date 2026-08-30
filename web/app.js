@@ -74,6 +74,58 @@
     }) || null;
   }
 
+  // —— 收藏导出/导入（备份恢复，数据仅在用户主动操作时读写本机）
+  function exportSaved() {
+    const list = readSaved();
+    if (!list.length) { toast("还没有收藏可导出"); return; }
+    const blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "星火收藏备份-" + new Date().toISOString().slice(0, 10) + ".json";
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    toast("已导出 " + list.length + " 条收藏");
+  }
+
+  function importSaved(file) {
+    const reader = new FileReader();
+    reader.onerror = function () { toast("读取文件失败", 3000); };
+    reader.onload = function () {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!Array.isArray(data)) throw new Error("not-array");
+        // 严格校验：id 必须在诗库中；lineIndex 必须是整数且符合 kind 语义（poem=-1，line 在行数范围内）
+        const valid = data.filter(function (r) {
+          if (!r || typeof r.id !== "string" || (r.kind !== "poem" && r.kind !== "line")) return false;
+          if (!poems.some(function (p) { return p.id === r.id; })) return false;
+          if (!Number.isInteger(r.lineIndex)) return false;
+          if (r.time !== undefined && (typeof r.time !== "number" || !isFinite(r.time))) return false;
+          const poem = poems.find(function (p) { return p.id === r.id; });
+          if (r.kind === "poem") return r.lineIndex === -1;
+          return r.lineIndex >= 0 && r.lineIndex < (poem.lines || []).length;
+        });
+        if (!valid.length) { toast("文件里没有有效收藏", 3000); return; }
+        const existing = readSaved();
+        const keys = existing.map(function (r) { return r.id + ":" + r.lineIndex + ":" + r.kind; });
+        let added = 0;
+        valid.forEach(function (r) {
+          const k = r.id + ":" + r.lineIndex + ":" + r.kind;
+          if (keys.indexOf(k) < 0) { keys.push(k); existing.push(r); added++; }
+        });
+        if (!writeSaved(existing)) {
+          toast("导入失败：存储空间不足", 3000);
+          return;
+        }
+        updateMineSummaries();
+        toast(added ? "已导入 " + added + " 条新收藏" : "这些收藏已存在", added ? 2200 : 3200);
+      } catch (e) {
+        toast("导入失败：文件格式不对", 3000);
+      }
+    };
+    reader.readAsText(file);
+  }
+
   function isSaved(poemId) {
     return !!findSaved(poemId, -1);
   }
@@ -110,14 +162,14 @@
 
   let toastTimer = null;
 
-  function toast(msg) {
+  function toast(msg, duration) {
     const el = document.getElementById("toast");
     el.textContent = msg;
     el.classList.add("show");
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () {
       el.classList.remove("show");
-    }, 1600);
+    }, duration || 1600);
   }
 
   function applyPrefs() {
@@ -154,14 +206,18 @@
     document.documentElement.setAttribute("data-font", font);
     document.documentElement.setAttribute("data-skin", skin);
     // 字号按 pt 缩放（以 17pt 为基准，pt 为名义单位），JS inline 覆盖默认变量。
-    // 只缩放阅读区（首页诗句/两行小字、详情页正文）；界面文字（列表、按钮、设置等）固定。
+    // 只缩放阅读区（首页诗句、两行小字）；详情页正文/标题固定字号，避免七绝七律提早换行。
     const s = pt / 17;
     const BASE = {
-      "--fs-excerpt": 32, "--fs-poem": 18, "--fs-section": 18, "--fs-body": 15,
+      "--fs-excerpt": 32, "--fs-poem": 17, "--fs-section": 18, "--fs-body": 15,
       "--fs-meta": 13, "--fs-date": 12
     };
     Object.keys(BASE).forEach(function (k) {
-      let px = Math.round(BASE[k] * s);
+      let px = BASE[k];
+      // 只对首页诗句、两行小字缩放；详情页使用固定字号
+      if (k === "--fs-excerpt" || k === "--fs-meta" || k === "--fs-date") {
+        px = Math.round(px * s);
+      }
       if (k === "--fs-date") px = Math.max(px, 8); // 日期行最小 8px，避免最小档过小
       document.documentElement.style.setProperty(k, px + "px");
     });
@@ -210,6 +266,11 @@
     const s = el("set-size-val"); if (s) s.textContent = size + "pt";
     const k = el("set-skin-val"); if (k) k.textContent = SKIN_NAMES[skin] || "米白";
     const b = el("set-bg-val"); if (b) b.textContent = bg;
+    const ex = el("mine-export-val");
+    if (ex) {
+      const n = readSaved().length;
+      ex.textContent = n ? n + " 条" : "";
+    }
   }
 
   function show(name) {
@@ -334,26 +395,34 @@
     return poems.find(function (p) { return p.id === currentId; }) || null;
   }
 
-  function wrapCanvasLines(ctx, texts, maxW) {
+  function loadImage(src) {
+    return new Promise(function (resolve) {
+      const img = new Image();
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { resolve(null); };
+      img.src = src;
+    });
+  }
+
+  function wrapCanvasText(ctx, text, maxW) {
+    // 按字符换行（保留显式 \n）；返回行数组
     const out = [];
-    texts.forEach(function (t) {
-      if (ctx.measureText(t).width <= maxW) {
-        out.push(t);
+    let line = "";
+    Array.from(String(text)).forEach(function (ch) {
+      if (ch === "\n") {
+        if (line) { out.push(line); line = ""; }
         return;
       }
-      let line = "";
-      for (let i = 0; i < t.length; i++) {
-        const test = line + t[i];
-        if (line && ctx.measureText(test).width > maxW) {
-          out.push(line);
-          line = t[i];
-        } else {
-          line = test;
-        }
+      const test = line + ch;
+      if (line && ctx.measureText(test).width > maxW) {
+        out.push(line);
+        line = ch;
+      } else {
+        line = test;
       }
-      if (line) out.push(line);
     });
-    return out;
+    if (line) out.push(line);
+    return out.length ? out : [""];
   }
 
   function savePoemCard() {
@@ -365,33 +434,94 @@
     const red = css.getPropertyValue("--red").trim() || "#8b1e1e";
     const muted = css.getPropertyValue("--muted").trim() || "#6b5e52";
     const gold = css.getPropertyValue("--gold").trim() || "#b0894a";
+    const reading = css.getPropertyValue("--font-reading").trim() || "serif";
+    const brush = '"草檀斋毛泽东字体", "Liu Jian Mao Cao", "Huiwen-mincho", serif';
     const W = 780;
     const pad = 72;
     const maxW = W - pad * 2;
-    const brush = '"草檀斋毛泽东字体", "Liu Jian Mao Cao", "Huiwen-mincho", serif';
-    const reading = css.getPropertyValue("--font-reading").trim() || "serif";
+    const dpr = 2;
 
+    // 整句一行（与详情页一致）：七绝七律等规整体裁整句不拆，词的长短句自然错落
+    const poemLines = (poem.lines || []).filter(function (ln) {
+      return ln.trim();
+    });
+
+    // 自定义背景图（与 .phone::before 相同来源）
+    const hasCustomBg = localStorage.getItem(KEY.bg) === "custom";
+    const bgData = hasCustomBg ? (localStorage.getItem(KEY.customBg) || "") : "";
+    const bgOpacity = Number(localStorage.getItem(KEY.opacity) || 40) / 100;
+
+    // 品牌图用 dataURL 内嵌（web/brand-data.js）：file:// 下本地图片会污染 canvas 导致 toBlob 报错，
+    // dataURL 视为同源数据，绘制不会污染 canvas，file:// 与 http 均安全。
+    const brandPromise = loadImage(typeof BRAND_DATA !== "undefined" ? BRAND_DATA : "brand.png");
+    const bgPromise = bgData ? loadImage(bgData) : Promise.resolve(null);
+
+    // 等字体就绪 + 两张图（都保证 settle：fonts.ready 永不 reject，loadImage 用 onload/onerror 兜底）。
+    // 不用 document.fonts.load——它在字体被安全策略挂起时可能永不 settle，导致 Promise.all 卡死、点击无反应。
     Promise.all([
-      document.fonts.load('48px "草檀斋毛泽东字体"'),
-      document.fonts.load('48px "Liu Jian Mao Cao"'),
-      document.fonts.load('32px "Liu Jian Mao Cao"'),
-      document.fonts.load('26px "Huiwen-mincho"'),
-      document.fonts.load('26px "Songti SC"')
-    ]).catch(function () { return null; }).then(function () {
+      document.fonts.ready,
+      brandPromise,
+      bgPromise
+    ]).then(function (res) {
+      const brandImg = res[1];
+      const bgImg = res[2];
+
+      // 第一遍：测量各段行数，算出总高
       const probe = document.createElement("canvas").getContext("2d");
-      probe.font = "36px " + brush;
-      const body = wrapCanvasLines(probe, poem.lines, maxW);
-      const lineH = 56;
-      const H = pad + 40 + 52 + 32 + 36 + body.length * lineH + 88 + pad;
+      probe.font = "bold 20px " + reading; // 与标题绘制字体一致，否则换行测量不准
+      const titleLines = wrapCanvasText(probe, poem.title, maxW);
+      probe.font = "18px " + brush;
+      const bodyLines = poemLines.length;
+      probe.font = "18px " + reading;
+      const bgPara = (poem.background || []).map(function (p) { return wrapCanvasText(probe, p, maxW); });
+      const interPara = (poem.interpretation || []).map(function (p) { return wrapCanvasText(probe, p, maxW); });
+      probe.font = "13px " + reading;
+      const srcLines = (poem.sources || []).map(function (s) { return wrapCanvasText(probe, s, maxW); });
+
+      // 字号层级统一：标题组（诗标题/小节标题）20px，正文组（诗/段落）18px
+      const titleH = 30;   // 标题行高（20px）
+      const poemH = 32;    // 诗行高（18px 毛体）
+      const secH = 30;     // 小节标题行高（20px）
+      const bodyH = 28;    // 正文行高（18px）
+      const srcH = 20;     // 来源行高（13px）
+      const brandFootH = 44;  // 底部小品牌图高度（落款）
+
+      // 顶部不放大图：与底部星火重复，且挤占标题空间；标题直接从框内上方开始
+      let H = pad + 8;
+      H += titleLines.length * titleH + 6;
+      H += 28;                 // meta（15px 行高 28）
+      H += 16;
+      H += bodyLines * poemH + 24;
+      H += 40;                 // 分隔线区
+      if (poem.complete) {
+        H += secH + 14 + bgPara.reduce(function (n, a) { return n + a.length * bodyH + 12; }, 0);
+        H += secH + 14 + interPara.reduce(function (n, a) { return n + a.length * bodyH + 12; }, 0);
+        if (srcLines.length) {
+          H += secH + 10 + srcLines.reduce(function (n, a) { return n + a.length * srcH; }, 0);
+        }
+      } else {
+        H += secH + 14 + bodyH * 2;
+      }
+      H += 40 + brandFootH + pad;
+
       const canvas = document.createElement("canvas");
-      const dpr = 2;
       canvas.width = W * dpr;
       canvas.height = H * dpr;
       const ctx = canvas.getContext("2d");
       ctx.scale(dpr, dpr);
+
+      // 背景：皮肤纸色 + 自定义背景图（半透明叠加，与页面一致）
       ctx.fillStyle = paper;
       ctx.fillRect(0, 0, W, H);
+      if (bgImg) {
+        const sc = Math.max(W / bgImg.width, H / bgImg.height);
+        const bw = bgImg.width * sc, bh = bgImg.height * sc;
+        ctx.globalAlpha = bgOpacity;
+        ctx.drawImage(bgImg, (W - bw) / 2, (H - bh) / 2, bw, bh);
+        ctx.globalAlpha = 1;
+      }
 
+      // 金线双框
       ctx.strokeStyle = gold;
       ctx.lineWidth = 1.25;
       ctx.strokeRect(28, 28, W - 56, H - 56);
@@ -401,14 +531,18 @@
       ctx.textAlign = "center";
       ctx.textBaseline = "top";
 
-      ctx.fillStyle = red;
-      ctx.font = "34px " + brush;
-      ctx.fillText("星火", W / 2, pad);
+      let y = pad + 8;
 
+      // 标题（与小节标题同字号：bold 20px，多行居中）
       ctx.fillStyle = ink;
-      ctx.font = "24px " + reading;
-      ctx.fillText(poem.title, W / 2, pad + 52);
+      ctx.font = "bold 20px " + reading;
+      titleLines.forEach(function (l) {
+        ctx.fillText(l, W / 2, y);
+        y += titleH;
+      });
+      y += 6;
 
+      // 日期 · 地点
       const meta = poem.date
         ? (poem.place
           ? poem.date + "  ·  于" + poem.place
@@ -416,30 +550,86 @@
         : "毛泽东";
       ctx.fillStyle = muted;
       ctx.font = "15px " + reading;
-      ctx.fillText(meta, W / 2, pad + 90);
+      ctx.fillText(meta, W / 2, y);
+      y += 28 + 16;
 
+      // 诗（毛体，整句一行，与正文同字号 18px）
       ctx.fillStyle = ink;
-      ctx.font = "30px " + brush;
-      let y = pad + 148;
-      body.forEach(function (line) {
-        ctx.fillText(line, W / 2, y);
-        y += lineH;
+      ctx.font = "18px " + brush;
+      poemLines.forEach(function (l) {
+        ctx.fillText(l, W / 2, y);
+        y += poemH;
       });
+      y += 24;
 
+      // 金色分隔线
       ctx.strokeStyle = gold;
       ctx.lineWidth = 0.7;
       ctx.beginPath();
-      ctx.moveTo(W / 2 - 36, H - pad - 46);
-      ctx.lineTo(W / 2 + 36, H - pad - 46);
+      ctx.moveTo(W / 2 - 36, y);
+      ctx.lineTo(W / 2 + 36, y);
       ctx.stroke();
+      y += 40;
 
-      ctx.fillStyle = red;
-      ctx.font = "20px " + brush;
-      ctx.fillText("星火", W / 2, H - pad - 32);
+      function drawSection(title, paras) {
+        // 小节标题：左侧红竖线 + 红字
+        ctx.fillStyle = red;
+        ctx.font = "bold 20px " + reading;
+        ctx.textAlign = "left";
+        ctx.fillRect(pad - 14, y + 5, 3, 20);
+        ctx.fillText(title, pad, y);
+        ctx.textAlign = "center";
+        y += secH + 14;
+        ctx.fillStyle = ink;
+        ctx.font = "18px " + reading;  // 段落与诗正文同字号 18px
+        ctx.textAlign = "left";
+        paras.forEach(function (lines) {
+          lines.forEach(function (l) {
+            ctx.fillText(l, pad, y);
+            y += bodyH;
+          });
+          y += 12;
+        });
+        ctx.textAlign = "center";
+      }
+
+      if (poem.complete) {
+        drawSection("写作背景", bgPara);
+        drawSection("诗词解读", interPara);
+        if (srcLines.length) {
+          ctx.fillStyle = red;
+          ctx.font = "bold 20px " + reading;
+          ctx.textAlign = "left";
+          ctx.fillRect(pad - 14, y + 5, 3, 20);
+          ctx.fillText("来源", pad, y);
+          ctx.textAlign = "center";
+          y += secH + 10;
+          ctx.fillStyle = muted;
+          ctx.font = "13px " + reading;
+          ctx.textAlign = "left";
+          srcLines.forEach(function (lines) {
+            lines.forEach(function (l) {
+              ctx.fillText(l, pad, y);
+              y += srcH;
+            });
+          });
+          ctx.textAlign = "center";
+        }
+      } else {
+        drawSection("写作背景", [["这篇尚未写就。"]]);
+        drawSection("诗词解读", [["这篇尚未写就。"]]);
+      }
+
+      y += 40;
+      // 底部小品牌图
+      if (brandImg) {
+        const bw = Math.round(brandImg.width * brandFootH / brandImg.height);
+        ctx.drawImage(brandImg, (W - bw) / 2, y, bw, brandFootH);
+      }
 
       canvas.toBlob(function (blob) {
         if (!blob) {
-          toast("这张图没能生成");
+          toast("这张图没能生成", 4000);
           return;
         }
         const a = document.createElement("a");
@@ -449,6 +639,9 @@
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
         toast("已保存图片");
       }, "image/png");
+    }).catch(function (err) {
+      // 任何绘制/导出异常都可见，避免"点击无反应"（4s 足够读清错误）
+      toast("存图失败：" + (err && err.message ? err.message : err), 4000);
     });
   }
 
@@ -493,6 +686,8 @@
     document.getElementById("detail-body").innerHTML =
       '<p class="meta">' + escapeHtml(meta) + "</p>" + orig +
       '<div class="poem">' + poem.lines.map(function (line) {
+        // 整句一行：七绝七律等规整体裁不拆（字号已固定为 17px，整句不提前换行）；
+        // 词的长短句按原文自然排版
         return "<div>" + escapeHtml(line) + "</div>";
       }).join("") + "</div>" +
       '<div class="section-title">写作背景</div>' +
@@ -591,7 +786,7 @@
   var CONTACT = { email: "3280302235@qq.com", github: "https://github.com/CristinaHan/MaoPoem" };
 
   function renderAbout() {
-    document.getElementById("about-github-summary").textContent = CONTACT.github ? "已开放" : "整理中";
+    document.getElementById("about-github-summary").textContent = "";
     show("about");
   }
 
@@ -600,6 +795,7 @@
       "星火是一个本地阅读应用。所有诗词、背景、解读与字体均打包在应用内，阅读时不需要联网。",
       "你的设置（字体、字号、皮肤、背景）与收藏内容仅保存在本机浏览器存储中，应用不会上传、不会收集任何个人信息。",
       "若你上传背景图片，图片只存于本机，不会离开设备。",
+      "存图与导出收藏由你主动触发：生成的图片与备份文件只写入你的设备，应用不经过任何服务器。",
       "本应用无广告、无统计、无第三方 SDK。"
     ],
     help: [
@@ -607,6 +803,7 @@
       "换一句：点右下角「换一句」，随机展示另一句；右上角星标可收藏当前句子。",
       "搜索：点左下角「搜索」，输入诗句或诗题找回诗作。",
       "收藏：详情页右上角星标收藏整首诗；「我的 → 收藏」可查看与管理，分「全诗」「单句」两类。",
+      "备份：收藏不会离开你的设备；「我的 → 导出收藏」可下载备份文件，换设备后「导入收藏」恢复（合并去重）。",
       "设置：「我的 → 设置」可调字体（5 种）、字号（12–24pt）、皮肤（7 种配色）与背景图。",
       "离线可用：字体与数据全部本地，断网也能正常阅读。"
     ]
@@ -666,6 +863,15 @@
   document.getElementById("mine-saved").addEventListener("click", function () {
     savedTab = "poem"; managing = false; selected = {};
     renderSaved();
+  });
+  // 收藏备份：导出（下载 JSON）与导入（合并去重）
+  document.getElementById("mine-export").addEventListener("click", exportSaved);
+  document.getElementById("mine-import").addEventListener("click", function () {
+    document.getElementById("import-file").click();
+  });
+  document.getElementById("import-file").addEventListener("change", function () {
+    if (this.files && this.files[0]) importSaved(this.files[0]);
+    this.value = "";
   });
   // 设置四行：跳转子页（与收藏/关于一致的导航方式）
   ["set-font", "set-size", "set-skin", "set-bg"].forEach(function (id) {

@@ -96,6 +96,28 @@
             <span class="mine-name">收藏</span>
             <span class="mine-arrow">›</span>
           </button>
+          <button class="mine-row" id="mine-export" type="button">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3v10m0 0l-4-4m4 4l4-4"/>
+                <path d="M4 21h16"/>
+              </svg>
+            </span>
+            <span class="mine-name">导出收藏</span>
+            <span class="mine-summary" id="mine-export-val"></span>
+            <span class="mine-arrow">›</span>
+          </button>
+          <button class="mine-row" id="mine-import" type="button">
+            <span class="mine-icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 21V11m0 0l-4 4m4-4l4 4"/>
+                <path d="M4 3h16"/>
+              </svg>
+            </span>
+            <span class="mine-name">导入收藏</span>
+            <span class="mine-summary"></span>
+            <span class="mine-arrow">›</span>
+          </button>
           <p class="mine-label">设置</p>
           <button class="mine-row" id="set-font" type="button" data-view="set-font">
             <span class="mine-icon">
@@ -243,7 +265,6 @@
           <div class="about-hero">
             <p class="brand about-brand"><img class="brand-img" src="brand.png" alt="星火" /></p>
             <p class="about-ver" id="about-version">版本 v1.0.0</p>
-            <p class="about-tagline">打开，读一句毛诗；点进去，看它被写下时的处境。</p>
           </div>
           <p class="mine-label">关于</p>
           <button class="mine-row" id="about-privacy" type="button">
@@ -320,7 +341,9 @@
       <div class="toast" id="toast" role="status"></div>
     </div>
   </div>
+  <input class="sr-only" id="import-file" type="file" accept=".json,application/json" />
   <script src="data/poems.js"></script>
+  <script src="brand-data.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

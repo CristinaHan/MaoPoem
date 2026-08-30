@@ -17,7 +17,7 @@
   /* 阅读字体（首页诗句/详情页正文），随「字体」设置切换 */
   --font-reading: var(--font-ui);
   --fs-excerpt: 32px;
-  --fs-poem: 18px;
+  --fs-poem: 17px;   /* 详情页正文：整句一行时七绝七律（16 字符含标点）不提前换行 */
   --fs-section: 18px;
   --fs-body: 15px;
   --fs-meta: 13px;
@@ -390,10 +390,15 @@ html.fonts-ready .home-meta.is-fading {
   font-size: 17px;
   font-weight: 700;
   color: var(--ink);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   padding: 0 8px;
+  line-height: 1.3;
+}
+
+/* 详情页标题：18px（比正文 17px 略大，标题不小于正文）；
+   多行完整展示（无 nowrap/ellipsis，topbar 高度随内容自适应） */
+#view-detail .topbar h1 {
+  font-size: 18px;
+  font-family: var(--font-reading);
 }
 .back, .icon-btn {
   border: 0;
