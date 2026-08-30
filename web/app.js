@@ -632,6 +632,23 @@
           toast("这张图没能生成", 4000);
           return;
         }
+        // Android 壳（XingHuoBridge）：dataURL 直存系统相册；浏览器环境走下载
+        if (window.XingHuoBridge && typeof XingHuoBridge.saveImage === "function") {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          // 读回 dataURL（相册命名需要；体积小，可接受）
+          const reader = new FileReader();
+          reader.onload = function () {
+            XingHuoBridge.saveImage(reader.result, poem.title.replace(/[\\/:*?"<>|]/g, "") + ".png");
+            URL.revokeObjectURL(a.href);
+          };
+          reader.onerror = function () {
+            URL.revokeObjectURL(a.href);
+            toast("存图失败：无法读取图片", 4000);
+          };
+          reader.readAsDataURL(blob);
+          return;
+        }
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = poem.title.replace(/[\\/:*?"<>|]/g, "") + ".png";

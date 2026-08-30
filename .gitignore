@@ -12,6 +12,9 @@ docs/材料包/
 _tmp_catalog.json
 web/brand-crops/
 
+# APK 打包工程（本地构建用，不随代码分发）
+pack/
+
 # 系统/编辑器
 .DS_Store
 Thumbs.db
