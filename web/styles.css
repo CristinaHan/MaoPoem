@@ -17,7 +17,7 @@
   /* 阅读字体（首页诗句/详情页正文），随「字体」设置切换 */
   --font-reading: var(--font-ui);
   --fs-excerpt: 32px;
-  --fs-poem: 17px;   /* 详情页正文：整句一行时七绝七律（16 字符含标点）不提前换行 */
+  --fs-poem: 15px;   /* 详情页正文：整句一行时七绝七律（16 字符含标点，15px ≈ 250px）不提前换行；Android 壳已强制 textZoom 100 */
   --fs-section: 18px;
   --fs-body: 15px;
   --fs-meta: 13px;

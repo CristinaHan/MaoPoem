@@ -209,7 +209,7 @@
     // 只缩放阅读区（首页诗句、两行小字）；详情页正文/标题固定字号，避免七绝七律提早换行。
     const s = pt / 17;
     const BASE = {
-      "--fs-excerpt": 32, "--fs-poem": 17, "--fs-section": 18, "--fs-body": 15,
+      "--fs-excerpt": 32, "--fs-poem": 15, "--fs-section": 18, "--fs-body": 15,
       "--fs-meta": 13, "--fs-date": 12
     };
     Object.keys(BASE).forEach(function (k) {
@@ -251,6 +251,25 @@
     const opacityVal = document.getElementById("opacity-val");
     if (opacityVal) opacityVal.textContent = opacity + "%";
     updateMineSummaries(); // 「我的」页四行摘要随设置实时刷新
+    syncNativeTheme();     // Android 壳：状态栏颜色随皮肤/背景同步
+  }
+
+  // —— Android 壳主题同步：把当前皮肤背景色告诉原生，状态栏颜色随之融合
+  function syncNativeTheme() {
+    if (!window.XingHuoBridge || typeof XingHuoBridge.setTheme !== "function") return;
+    try {
+      const css = getComputedStyle(document.documentElement);
+      const paper = (css.getPropertyValue("--paper") || "#f4efe4").trim();
+      const m = paper.match(/#([0-9a-f]{6})/i);
+      let dark = false;
+      if (m) {
+        const r = parseInt(m[1].slice(0, 2), 16);
+        const g = parseInt(m[1].slice(2, 4), 16);
+        const b = parseInt(m[1].slice(4, 6), 16);
+        dark = (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.45;  // 亮度低于阈值 → 深色皮肤
+      }
+      XingHuoBridge.setTheme(paper, dark);
+    } catch (e) { /* 忽略：非壳环境或异常不影响页面 */ }
   }
 
   // 「我的」页设置行摘要（字体/字号/皮肤/背景 当前值）
