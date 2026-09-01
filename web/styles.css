@@ -1,5 +1,4 @@
 @import url("fonts/huiwen/result.css");
-@import url("fonts/liujian/result.css");
 
 :root {
   --paper: #f4efe4;
@@ -129,23 +128,27 @@ body {
   overflow-y: auto;
   color: var(--ink);
 }
-.phone::before {
+/* 自定义背景图：只用于首页诗句区域与详情页（用户确认），其余页面不叠加 */
+.excerpt, .detail { position: relative; }
+.excerpt::before, .detail::before {
   content: "";
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 0;
   pointer-events: none;
   background-position: center;
   background-size: cover;
   opacity: 0;
 }
-/* 原 ::after 内金线框已删除：它浮在内容之上，滚动时文字会从边框线下穿过造成重叠错位。
-   手机壳外框（.phone 的 border/box-shadow）保留，不随内容滚动，无此问题。 */
-.phone > *:not(.toast) { position: relative; z-index: 1; }
-html[data-bg="custom"] .phone::before {
+html[data-bg="custom"] .excerpt::before,
+html[data-bg="custom"] .detail::before {
   background-image: var(--custom-bg);
   opacity: var(--bg-opacity);
 }
+.excerpt > *, .detail > * { position: relative; z-index: 1; }
 
 @media (min-width: 520px) {
   .stage {
@@ -226,6 +229,104 @@ html.fonts-ready .brand,
 html.fonts-ready .excerpt,
 html.fonts-ready .home-meta {
   opacity: 1;
+}
+
+/* —— 通用弹层（确认框 / 存图预览）：fixed 全屏居中，最顶层 —— */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+}
+.modal {
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 14px;
+  max-width: 100%;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+}
+.modal-body {
+  padding: 22px 20px 6px;
+  overflow-y: auto;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.modal-body .preview-img {
+  display: block;
+  max-width: 100%;
+  max-height: 65vh;
+  margin: 0 auto 6px;
+  border-radius: 6px;
+}
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  padding: 14px 20px 18px;
+}
+.modal-actions button {
+  flex: 1;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+}
+.modal-actions button.primary {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+.modal-actions button:active { opacity: 0.75; }
+/* —— 搜索历史 —— */
+.search-hist { margin-top: 10px; font-family: var(--font-ui); }
+.search-hist-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted);
+  padding: 2px 4px 8px;
+}
+.search-hist-head button {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 4px 6px;
+  font-family: inherit;
+}
+#hist-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hist-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  padding: 6px 14px;
+  font-family: var(--font-ui);
+}
+.hist-chip:active { opacity: 0.7; }
+.bg-hint {
+  margin: 10px 2px 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
 }
 html.fonts-ready .excerpt.is-fading {
   opacity: 0;
@@ -585,7 +686,7 @@ html.fonts-ready .home-meta.is-fading {
   box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--red);
 }
 .toast {
-  position: absolute;
+  position: fixed;
   left: 50%;
   bottom: 96px;
   transform: translateX(-50%);

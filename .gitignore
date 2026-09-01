@@ -15,6 +15,9 @@ web/brand-crops/
 # APK 打包工程（本地构建用，不随代码分发）
 pack/
 
+# Agent 工具目录（会话/清单，非产品内容）
+.thincoder/
+
 # 系统/编辑器
 .DS_Store
 Thumbs.db

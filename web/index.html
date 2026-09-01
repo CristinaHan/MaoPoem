@@ -60,6 +60,13 @@
         </header>
         <label class="sr-only" for="q">诗句或诗题</label>
         <input id="q" type="search" placeholder="输入诗句或诗题" autocomplete="off" />
+        <div class="search-hist hidden" id="search-hist">
+          <div class="search-hist-head">
+            <span>搜索历史</span>
+            <button type="button" id="hist-clear">清除</button>
+          </div>
+          <div id="hist-list"></div>
+        </div>
         <ul class="results" id="results"></ul>
       </section>
 
@@ -247,7 +254,8 @@
             <button type="button" data-bg="none">无</button>
             <button type="button" data-bg="custom">+上传图片</button>
           </div>
-          <input class="sr-only" id="bg-file" type="file" accept="image/*" />
+          <input class="sr-only" id="bg-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" />
+          <p class="bg-hint">支持 PNG / JPG / WebP / GIF / BMP 格式</p>
           <div class="slider-row hidden" id="opacity-row">
             <span>浅</span>
             <input id="bg-opacity" type="range" min="10" max="70" value="40" aria-label="背景深浅" />
@@ -339,6 +347,13 @@
         <article class="detail" id="detail-body"></article>
       </section>
       <div class="toast" id="toast" role="status"></div>
+      <!-- 通用弹层：确认框 / 存图预览 -->
+      <div class="modal-mask hidden" id="modal-mask">
+        <div class="modal" role="dialog" aria-modal="true">
+          <div class="modal-body" id="modal-body"></div>
+          <div class="modal-actions" id="modal-actions"></div>
+        </div>
+      </div>
     </div>
   </div>
   <input class="sr-only" id="import-file" type="file" accept=".json,application/json" />

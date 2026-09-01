@@ -7,7 +7,8 @@
     bg: "maoshi-bg",
     customBg: "maoshi-custom-bg",
     opacity: "maoshi-bg-opacity",
-    saved: "maoshi-saved"
+    saved: "maoshi-saved",
+    searchHist: "maoshi-search-hist"
   };
 
   const views = {
@@ -78,14 +79,51 @@
   function exportSaved() {
     const list = readSaved();
     if (!list.length) { toast("还没有收藏可导出"); return; }
-    const blob = new Blob([JSON.stringify(list, null, 2)], { type: "application/json" });
+    const d = new Date();
+    const dateStr = d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0");
+    showModal(
+      "<p style=\"font-weight:700;font-size:16px;margin:0 0 10px\">是否导出收藏？</p>" +
+      "<p>文件：星火收藏备份-" + dateStr + ".json（" + list.length + " 条收藏）</p>",
+      [
+        { text: "取消", onClick: closeModal },
+        {
+          text: "导出", cls: "primary",
+          onClick: function () { closeModal(); doExport(list, dateStr); }
+        }
+      ]
+    );
+  }
+
+  function doExport(list, dateStr) {
+    const filename = "星火收藏备份-" + dateStr + ".json";
+    const json = JSON.stringify(list, null, 2);
+    // Android 壳：原生写入「下载」目录，返回展示路径「下载/文件名」
+    if (window.XingHuoBridge && typeof XingHuoBridge.exportFile === "function") {
+      const path = XingHuoBridge.exportFile(filename, json);
+      if (path && path.indexOf("ERROR") !== 0) {
+        showModal(
+          "<p>" + escapeHtml(filename) + " 已导出至 <b>" + escapeHtml(path) + "</b></p>",
+          [{ text: "确定", cls: "primary", onClick: closeModal }]
+        );
+      } else {
+        toast("导出失败：" + (path || "未知原因"), 3000);
+      }
+      return;
+    }
+    // 浏览器：触发下载，保存至「下载」文件夹
+    const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "星火收藏备份-" + new Date().toISOString().slice(0, 10) + ".json";
+    a.download = filename;
     a.click();
     setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
-    toast("已导出 " + list.length + " 条收藏");
+    showModal(
+      "<p>" + escapeHtml(filename) + " 已导出至「下载」文件夹</p>",
+      [{ text: "确定", cls: "primary", onClick: closeModal }]
+    );
   }
 
   function importSaved(file) {
@@ -111,19 +149,43 @@
         let added = 0;
         valid.forEach(function (r) {
           const k = r.id + ":" + r.lineIndex + ":" + r.kind;
-          if (keys.indexOf(k) < 0) { keys.push(k); existing.push(r); added++; }
+          if (keys.indexOf(k) < 0) { keys.push(k); added++; }
         });
-        if (!writeSaved(existing)) {
-          toast("导入失败：存储空间不足", 3000);
-          return;
-        }
-        updateMineSummaries();
-        toast(added ? "已导入 " + added + " 条新收藏" : "这些收藏已存在", added ? 2200 : 3200);
+        // 二次确认：是否导入 + 解析明细
+        const ignored = data.length - valid.length;
+        const dup = valid.length - added;
+        showModal(
+          "<p style=\"font-weight:700;font-size:16px;margin:0 0 10px\">是否导入收藏？</p>" +
+          "<p>文件解析：" + valid.length + " 条有效，忽略 " + ignored + " 条（无效/不在诗库）<br />" +
+          "将新增：" + added + " 条；已存在：" + dup + " 条</p>",
+          [
+            { text: "取消", onClick: closeModal },
+            {
+              text: "导入", cls: "primary",
+              onClick: function () { closeModal(); doImport(valid, added); }
+            }
+          ]
+        );
       } catch (e) {
         toast("导入失败：文件格式不对", 3000);
       }
     };
     reader.readAsText(file);
+  }
+
+  function doImport(valid, added) {
+    const existing = readSaved();
+    const keys = existing.map(function (r) { return r.id + ":" + r.lineIndex + ":" + r.kind; });
+    valid.forEach(function (r) {
+      const k = r.id + ":" + r.lineIndex + ":" + r.kind;
+      if (keys.indexOf(k) < 0) { keys.push(k); existing.push(r); }
+    });
+    if (!writeSaved(existing)) {
+      toast("导入失败：存储空间不足", 3000);
+      return;
+    }
+    updateMineSummaries();
+    toast(added ? "已导入 " + added + " 条新收藏" : "这些收藏已存在", added ? 2200 : 3200);
   }
 
   function isSaved(poemId) {
@@ -171,6 +233,69 @@
       el.classList.remove("show");
     }, duration || 1600);
   }
+
+  // —— 通用弹层（确认框 / 存图预览）——
+  function showModal(html, actions) {
+    document.getElementById("modal-body").innerHTML = html;
+    const wrap = document.getElementById("modal-actions");
+    wrap.innerHTML = "";
+    (actions || []).forEach(function (act) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      if (act.cls) btn.className = act.cls;
+      btn.textContent = act.text;
+      btn.addEventListener("click", act.onClick);
+      wrap.appendChild(btn);
+    });
+    document.getElementById("modal-mask").classList.remove("hidden");
+  }
+
+  function closeModal() {
+    document.getElementById("modal-mask").classList.add("hidden");
+  }
+
+  // —— Android 壳：系统返回（返回键 / 左划手势）按视图栈回退，首页才退出
+  function currentViewName() {
+    for (const key of Object.keys(views)) {
+      if (!views[key].classList.contains("hidden")) return key;
+    }
+    return "home";
+  }
+
+  window.handleNativeBack = function () {
+    try {
+      // 弹层（存图预览/确认框）开着时，返回先关弹层
+      const mask = document.getElementById("modal-mask");
+      if (mask && !mask.classList.contains("hidden")) {
+        closeModal();
+        return;
+      }
+      const v = currentViewName();
+      const goHome = function () {
+        renderHome(poems.find(function (p) { return p.id === lastHomeId; }) || poems[0], { keep: true });
+      };
+      if (v === "detail") {
+        // 与详情页返回按钮一致：搜索/收藏来源回到原处，其余回首页（保持原句）
+        if (cameFrom === "search") show("search");
+        else if (cameFrom === "saved") renderSaved();
+        else goHome();
+      } else if (v === "search") {
+        goHome();
+      } else if (v === "saved" || v === "set-font" || v === "set-size" ||
+                 v === "set-skin" || v === "set-bg" || v === "about") {
+        renderMine();
+      } else if (v === "privacy" || v === "help") {
+        show("about");
+      } else if (v === "mine") {
+        goHome();
+      } else {
+        // 首页：退出应用
+        if (window.XingHuoBridge && typeof XingHuoBridge.exitApp === "function") {
+          XingHuoBridge.exitApp();
+        }
+      }
+    } catch (e) { /* 兜底：异常不导致崩溃 */ }
+  };
 
   function applyPrefs() {
     let bg = localStorage.getItem(KEY.bg) || "none";
@@ -454,7 +579,6 @@
     const muted = css.getPropertyValue("--muted").trim() || "#6b5e52";
     const gold = css.getPropertyValue("--gold").trim() || "#b0894a";
     const reading = css.getPropertyValue("--font-reading").trim() || "serif";
-    const brush = '"草檀斋毛泽东字体", "Liu Jian Mao Cao", "Huiwen-mincho", serif';
     const W = 780;
     const pad = 72;
     const maxW = W - pad * 2;
@@ -476,20 +600,24 @@
     const bgPromise = bgData ? loadImage(bgData) : Promise.resolve(null);
 
     // 等字体就绪 + 两张图（都保证 settle：fonts.ready 永不 reject，loadImage 用 onload/onerror 兜底）。
-    // 不用 document.fonts.load——它在字体被安全策略挂起时可能永不 settle，导致 Promise.all 卡死、点击无反应。
-    Promise.all([
+    // 加 3s 超时兜底：极端环境下 fonts.ready 若挂起，存图也不至于"点击无反应"。
+    const ready = Promise.all([
       document.fonts.ready,
       brandPromise,
       bgPromise
-    ]).then(function (res) {
-      const brandImg = res[1];
-      const bgImg = res[2];
+    ]);
+    const timer = new Promise(function (resolve) {
+      setTimeout(function () { resolve(null); }, 3000);
+    });
+    Promise.race([ready, timer]).then(function (res) {
+      const brandImg = res ? res[1] : null;
+      const bgImg = res ? res[2] : null;
 
       // 第一遍：测量各段行数，算出总高
       const probe = document.createElement("canvas").getContext("2d");
       probe.font = "bold 20px " + reading; // 与标题绘制字体一致，否则换行测量不准
       const titleLines = wrapCanvasText(probe, poem.title, maxW);
-      probe.font = "18px " + brush;
+      probe.font = "18px " + reading;
       const bodyLines = poemLines.length;
       probe.font = "18px " + reading;
       const bgPara = (poem.background || []).map(function (p) { return wrapCanvasText(probe, p, maxW); });
@@ -499,7 +627,7 @@
 
       // 字号层级统一：标题组（诗标题/小节标题）20px，正文组（诗/段落）18px
       const titleH = 30;   // 标题行高（20px）
-      const poemH = 32;    // 诗行高（18px 毛体）
+      const poemH = 32;    // 诗行高（18px 阅读字体）
       const secH = 30;     // 小节标题行高（20px）
       const bodyH = 28;    // 正文行高（18px）
       const srcH = 20;     // 来源行高（13px）
@@ -572,9 +700,9 @@
       ctx.fillText(meta, W / 2, y);
       y += 28 + 16;
 
-      // 诗（毛体，整句一行，与正文同字号 18px）
+      // 诗（与详情页一致的阅读字体，整句一行，正文 18px）
       ctx.fillStyle = ink;
-      ctx.font = "18px " + brush;
+      ctx.font = "18px " + reading;
       poemLines.forEach(function (l) {
         ctx.fillText(l, W / 2, y);
         y += poemH;
@@ -646,39 +774,38 @@
         ctx.drawImage(brandImg, (W - bw) / 2, y, bw, brandFootH);
       }
 
-      canvas.toBlob(function (blob) {
-        if (!blob) {
-          toast("这张图没能生成", 4000);
-          return;
-        }
-        // Android 壳（XingHuoBridge）：dataURL 直存系统相册；浏览器环境走下载
-        if (window.XingHuoBridge && typeof XingHuoBridge.saveImage === "function") {
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          // 读回 dataURL（相册命名需要；体积小，可接受）
-          const reader = new FileReader();
-          reader.onload = function () {
-            XingHuoBridge.saveImage(reader.result, poem.title.replace(/[\\/:*?"<>|]/g, "") + ".png");
-            URL.revokeObjectURL(a.href);
-          };
-          reader.onerror = function () {
-            URL.revokeObjectURL(a.href);
-            toast("存图失败：无法读取图片", 4000);
-          };
-          reader.readAsDataURL(blob);
-          return;
-        }
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = poem.title.replace(/[\\/:*?"<>|]/g, "") + ".png";
-        a.click();
-        setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
-        toast("已保存图片");
-      }, "image/png");
+      // 预览确认：生成图先展示，用户确认后才保存（防误触）
+      const dataUrl = canvas.toDataURL("image/png");
+      const filename = poem.title.replace(/[\\/:*?"<>|]/g, "") + ".png";
+      showModal(
+        '<img class="preview-img" src="' + dataUrl + '" alt="诗词长图预览" />',
+        [
+          { text: "取消", onClick: closeModal },
+          { text: "保存", cls: "primary", onClick: function () { closeModal(); doSaveCard(dataUrl, filename); } }
+        ]
+      );
     }).catch(function (err) {
       // 任何绘制/导出异常都可见，避免"点击无反应"（4s 足够读清错误）
       toast("存图失败：" + (err && err.message ? err.message : err), 4000);
     });
+  }
+
+  // 保存长图：Android 壳直存相册（原生 Toast 提示「已保存至本地相册」，失败由 JS 提示）；浏览器环境走下载
+  function doSaveCard(dataUrl, filename) {
+    if (window.XingHuoBridge && typeof XingHuoBridge.saveImage === "function") {
+      try {
+        const r = XingHuoBridge.saveImage(dataUrl, filename);
+        if (r && r.indexOf("ERROR") === 0) toast("存图失败：" + r.slice(6), 4000);
+      } catch (e) {
+        toast("存图失败", 4000);
+      }
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = dataUrl;
+    a.download = filename;
+    a.click();
+    toast("已保存：" + filename, 3000);
   }
 
   function updateSaveBtn() {
@@ -722,7 +849,7 @@
     document.getElementById("detail-body").innerHTML =
       '<p class="meta">' + escapeHtml(meta) + "</p>" + orig +
       '<div class="poem">' + poem.lines.map(function (line) {
-        // 整句一行：七绝七律等规整体裁不拆（字号已固定为 17px，整句不提前换行）；
+        // 整句一行：七绝七律等规整体裁不拆（字号固定 15px，整句不提前换行）；
         // 词的长短句按原文自然排版
         return "<div>" + escapeHtml(line) + "</div>";
       }).join("") + "</div>" +
@@ -743,13 +870,46 @@
       "</button></li>";
   }
 
+  // —— 搜索历史（本机最近 10 条，去重置顶）——
+  function readHist() {
+    try {
+      const raw = localStorage.getItem(KEY.searchHist);
+      const list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list.filter(function (s) { return typeof s === "string" && s; }) : [];
+    } catch (e) { return []; }
+  }
+
+  function addHist(term) {
+    term = String(term || "").trim();
+    if (!term) return;
+    let list = readHist();
+    list = list.filter(function (s) { return s !== term; });
+    list.unshift(term);
+    if (list.length > 10) list = list.slice(0, 10);
+    try { localStorage.setItem(KEY.searchHist, JSON.stringify(list)); } catch (e) { /* 存储满则放弃记录 */ }
+  }
+
+  function renderHist() {
+    const list = readHist();
+    const wrap = document.getElementById("search-hist");
+    const box = document.getElementById("hist-list");
+    if (!list.length) { wrap.classList.add("hidden"); return; }
+    wrap.classList.remove("hidden");
+    box.innerHTML = list.map(function (s) {
+      return '<button type="button" class="hist-chip" data-q="' +
+        escapeHtml(s) + '">' + escapeHtml(s) + "</button>";
+    }).join("");
+  }
+
   function search(q) {
     const key = (q || "").trim().toLowerCase();
     const box = document.getElementById("results");
     if (!key) {
       box.innerHTML = "";
+      renderHist();  // 空输入 → 展示搜索历史
       return;
     }
+    document.getElementById("search-hist").classList.add("hidden");
     const hits = poems.filter(function (p) {
       const sub = p.excerpt || (Array.isArray(p.lines) && p.lines[0]) || "";
       return (p.searchText + " " + sub + " " + p.title).toLowerCase().indexOf(key) !== -1;
@@ -789,7 +949,7 @@
     document.getElementById("tab-line").classList.toggle("on", savedTab === "line");
     const box = document.getElementById("saved-list");
     if (!cur.length) {
-      box.innerHTML = '<p class="empty">还没有收藏' + (savedTab === "poem" ? "全诗。" : "单句。") + "在详情页收藏整首诗，或在首页点右上角星标收藏单句。</p>";
+      box.innerHTML = "";
     } else {
       box.innerHTML = cur.map(function (x) {
         const key = savedKey(x.rec.id, x.rec.lineIndex);
@@ -828,11 +988,13 @@
 
   var DOCS = {
     privacy: [
-      "星火是一个本地阅读应用。所有诗词、背景、解读与字体均打包在应用内，阅读时不需要联网。",
+      "星火是一个离线诗词阅读应用，以「不收集、不追踪、不联网」为设计底线。",
+      "本应用不收集任何信息：无账号、无注册，不读取设备标识，无统计埋点，不投放广告，不接入任何第三方 SDK。",
       "你的设置（字体、字号、皮肤、背景）与收藏内容仅保存在本机浏览器存储中，应用不会上传、不会收集任何个人信息。",
       "若你上传背景图片，图片只存于本机，不会离开设备。",
-      "存图与导出收藏由你主动触发：生成的图片与备份文件只写入你的设备，应用不经过任何服务器。",
-      "本应用无广告、无统计、无第三方 SDK。"
+      "存图、导出收藏、导入收藏均由你主动触发：生成的图片与备份文件只写入你的设备，不经过任何服务器。",
+      "卸载应用或清除浏览器数据后，本地数据随之删除，应用无任何服务器端副本。",
+      "完整政策见项目文档《隐私政策》；如有疑问可通过「我的 → 关于 → 反馈」联系。"
     ],
     help: [
       "首页：每次打开随机展示一句完整诗句，点句子可看全诗。",
@@ -856,6 +1018,11 @@
     if (!btn) return;
     const poem = poems.find(function (p) { return p.id === btn.getAttribute("data-id"); });
     if (!poem) return;
+    if (from === "search") {
+      // 从搜索结果进入详情 → 记一条搜索历史（有效搜索）
+      const q = document.getElementById("q");
+      addHist(q ? q.value : "");
+    }
     cameFrom = from;
     renderDetail(poem);
   }
@@ -875,6 +1042,7 @@
     document.getElementById("q").value = "";
     document.getElementById("results").innerHTML = "";
     show("search");
+    renderHist();  // 进入搜索页即展示历史（空输入态）
     document.getElementById("q").focus();
   });
   // 首页右上角：☆ 快速收藏当前句子；☰ 进入「我的」
@@ -888,7 +1056,7 @@
     if (!currentId || lastHomeLineIndex < 0) return;
     const nowSaved = toggleSaved(currentId, lastHomeLineIndex);
     updateHomeSaveBtn();
-    if (nowSaved !== null) toast(nowSaved ? "已收藏此句" : "已取消收藏此句");
+    if (nowSaved !== null) toast(nowSaved ? "已收藏此句" : "已取消收藏", 2200);
   });
   document.getElementById("btn-menu").addEventListener("click", function () {
     renderMine();
@@ -1001,13 +1169,29 @@
     if (!currentId) return;
     const nowSaved = toggleSaved(currentId, -1); // 详情页收藏整首诗
     updateSaveBtn();
-    if (nowSaved !== null) toast(nowSaved ? "已收藏全诗" : "已取消收藏");
+    if (nowSaved !== null) toast(nowSaved ? "已收藏全诗" : "已取消收藏", 2200);
   });
   document.getElementById("btn-card").addEventListener("click", function () {
     savePoemCard();
   });
   document.getElementById("q").addEventListener("input", function (e) {
     search(e.target.value);
+  });
+  // 搜索历史：清除 / 点击历史词重搜
+  document.getElementById("hist-clear").addEventListener("click", function () {
+    try { localStorage.removeItem(KEY.searchHist); } catch (e) { /* 忽略 */ }
+    renderHist();
+  });
+  document.getElementById("hist-list").addEventListener("click", function (e) {
+    const chip = e.target.closest(".hist-chip");
+    if (!chip) return;
+    const q = document.getElementById("q");
+    q.value = chip.getAttribute("data-q");
+    search(q.value);
+  });
+  // 弹层：点遮罩空白处关闭
+  document.getElementById("modal-mask").addEventListener("click", function (e) {
+    if (e.target === this) closeModal();
   });
   document.getElementById("results").addEventListener("click", function (e) {
     openFromList(e.target, "search");
@@ -1039,6 +1223,12 @@
     const file = e.target.files && e.target.files[0];
     e.target.value = "";
     if (!file) return;
+    // 格式白名单：HEIC 等浏览器解不开的格式直接提示（文件选择器已按 accept 过滤，这里兜底）
+    const okTypes = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/bmp"];
+    if (file.type && okTypes.indexOf(file.type) === -1) {
+      toast("仅支持 PNG / JPG / WebP / GIF / BMP 格式", 3000);
+      return;
+    }
     const img = new Image();
     const url = URL.createObjectURL(file);
     img.onload = function () {
@@ -1052,14 +1242,18 @@
       const canvas = document.createElement("canvas");
       canvas.width = w;
       canvas.height = h;
-      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      const c2d = canvas.getContext("2d");
+      // 先铺当前纸色再画图：透明 PNG 转 JPEG 时不至于变黑底
+      c2d.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim() || "#f4efe4";
+      c2d.fillRect(0, 0, w, h);
+      c2d.drawImage(img, 0, 0, w, h);
       URL.revokeObjectURL(url);
       const data = canvas.toDataURL("image/jpeg", 0.72);
       try {
         localStorage.setItem(KEY.customBg, data);
         localStorage.setItem(KEY.bg, "custom");
         applyPrefs();
-        toast("已换上自己的图");
+        toast("上传成功");
       } catch (err) {
         toast("图片太大，换一张小一点的");
       }
