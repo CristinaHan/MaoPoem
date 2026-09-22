@@ -21,3 +21,7 @@ pack/
 # 系统/编辑器
 .DS_Store
 Thumbs.db
+
+# 个人信息（简历与论文，不公开）
+docs/简历-经历改写-AI产品岗.md
+docs/大创论文.pdf
