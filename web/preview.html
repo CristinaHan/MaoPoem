@@ -221,8 +221,10 @@
       size.h = clamp(+CH.value || 844, 480, 1600);
     } else {
       var p = v.split("x");
-      size.w = +p[0];
-      size.h = +p[1];
+      var w = +p[0];
+      var h = +p[1];
+      size.w = isFinite(w) && w > 0 ? w : 393;
+      size.h = isFinite(h) && h > 0 ? h : 852;
     }
     applySize();
   }
@@ -231,7 +233,8 @@
 
   // ── 重载 ────────────────────────────────────────────────
   function reload() {
-    // 带时间戳，避开浏览器缓存（改完 app.js 立刻见效）
+    // 时间戳只保证页面本身不吃磁盘缓存；app.js / styles.css 走服务器协商缓存，
+    // 本地静态服务器会回 304 校验，改动照样立刻可见。真撞上旧版本就硬刷新一次（Ctrl+F5）。
     FRAME.src = "./index.html?t=" + Date.now();
   }
 
@@ -270,8 +273,24 @@
     if (rippleOn) injectRipple();
   }
 
+  // ── 键盘桥接：焦点进到 app 里以后，R 也要能重载 ──────────
+  var KEY_BRIDGE = "__preview_key_bridge";
+
+  function injectKeyBridge() {
+    var doc;
+    try { doc = FRAME.contentDocument; } catch (e) { return; }
+    if (!doc || doc[KEY_BRIDGE]) return;
+    doc[KEY_BRIDGE] = true;
+    doc.addEventListener("keydown", function (e) {
+      var tag = e.target && e.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.key === "r" || e.key === "R") window.parent.postMessage("preview:reload", "*");
+    }, true);
+  }
+
   FRAME.addEventListener("load", function () {
     syncRipple();
+    injectKeyBridge();
   });
 
   touchBtn.addEventListener("click", function () {
@@ -303,6 +322,9 @@
   document.getElementById("reload").addEventListener("click", reload);
 
   window.addEventListener("resize", fit);
+  window.addEventListener("message", function (e) {
+    if (e.data === "preview:reload") reload();
+  });
   window.addEventListener("keydown", function (e) {
     if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
     if (e.key === "r" || e.key === "R") reload();
