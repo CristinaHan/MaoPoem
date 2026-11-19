@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>星火 · 预览台</title>
+<style>
+  :root {
+    --gold: #b0894a;
+    --paper: #f6f0e4;
+    --ink: #2a2118;
+    --panel: #241d17;
+    --line: rgba(176, 137, 74, 0.28);
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background: #15110e;
+    color: #e8dcc8;
+    font: 13px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+    overflow: hidden;
+  }
+
+  /* ── 顶部控制条 ── */
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    flex: none;
+  }
+  .brand {
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-right: 6px;
+  }
+  .ctl { display: flex; align-items: center; gap: 6px; }
+  .ctl > span { color: #9b8b74; font-size: 12px; }
+  select, input[type="number"] {
+    background: #1a1511;
+    color: #e8dcc8;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5px 8px;
+    font: inherit;
+    outline: none;
+  }
+  select:focus, input:focus { border-color: var(--gold); }
+  input[type="number"] { width: 68px; }
+  button {
+    background: #2f261d;
+    color: #e8dcc8;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font: inherit;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  button:hover { background: #3b3025; border-color: var(--gold); }
+  button.primary { background: var(--gold); color: #1a1511; border-color: var(--gold); }
+  button.primary:hover { background: #c59a55; }
+  button.danger:hover { border-color: #b4553f; color: #e08a72; }
+  button[aria-pressed="true"] {
+    background: var(--gold);
+    color: #1a1511;
+    border-color: var(--gold);
+  }
+  .spacer { flex: 1; }
+  .hint {
+    color: #7d6f5c;
+    font-size: 12px;
+    user-select: all;
+  }
+  .hint code {
+    color: var(--gold);
+    background: #1a1511;
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  /* ── 舞台与手机 ── */
+  .stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    background: radial-gradient(ellipse at center, #3a312a 0%, #12100d 70%);
+  }
+  .device {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-origin: center center;
+    background: #0b0908;
+    border: 1.5px solid var(--gold);
+    border-radius: 34px;
+    padding: 10px;
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, .55),
+      0 0 0 1px rgba(176, 137, 74, .22);
+    transition: width .18s ease, height .18s ease;
+  }
+  .device iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 26px;
+    background: var(--paper);
+  }
+  .device::after {          /* 屏幕内的细描边，弱化白边 */
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border-radius: 26px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12);
+    pointer-events: none;
+  }
+
+  .badge {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    color: #6f6252;
+    font-size: 11px;
+    letter-spacing: .5px;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <span class="brand">星火 · 预览台</span>
+
+  <label class="ctl">
+    <span>机型</span>
+    <select id="preset">
+      <option value="393x852">iPhone 15 Pro 393×852</option>
+      <option value="375x667">iPhone SE 375×667</option>
+      <option value="412x915">Pixel 7 412×915</option>
+      <option value="360x640">小屏 360×640</option>
+      <option value="custom">自定义…</option>
+    </select>
+  </label>
+
+  <label class="ctl" id="custom-box" hidden>
+    <span>宽</span><input type="number" id="cw" value="390" min="280" max="900">
+    <span>高</span><input type="number" id="ch" value="844" min="480" max="1600">
+  </label>
+
+  <button id="reload" class="primary" title="快捷键 R">重载</button>
+  <button id="touch" aria-pressed="false" title="在页面上画出触摸点，好看清点到了哪里">触摸点</button>
+  <button id="reset" class="danger" title="清空收藏与引导标记，回到首次打开的状态">重置数据</button>
+
+  <span class="spacer"></span>
+  <span class="hint">真机看：<code id="lan-url">http://你的电脑IP:8765/</code></span>
+</div>
+
+<div class="stage" id="stage">
+  <div class="device" id="device">
+    <iframe id="frame" src="./index.html" title="星火 App 预览"></iframe>
+  </div>
+  <div class="badge" id="badge"></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STAGE = document.getElementById("stage");
+  var DEVICE = document.getElementById("device");
+  var FRAME = document.getElementById("frame");
+  var PRESET = document.getElementById("preset");
+  var CUSTOM_BOX = document.getElementById("custom-box");
+  var CW = document.getElementById("cw");
+  var CH = document.getElementById("ch");
+  var BADGE = document.getElementById("badge");
+  var LAN = document.getElementById("lan-url");
+  var touchBtn = document.getElementById("touch");
+
+  var size = { w: 393, h: 852 };
+  var rippleOn = false;
+
+  // ── 尺寸与缩放 ──────────────────────────────────────────
+  function applySize() {
+    DEVICE.style.width = size.w + "px";
+    DEVICE.style.height = size.h + "px";
+    fit();
+  }
+
+  function fit() {
+    // 设备含 10px padding + 1.5px 边框，按外框尺寸算缩放
+    var boxW = size.w + 23;
+    var boxH = size.h + 23;
+    var availW = STAGE.clientWidth - 48;
+    var availH = STAGE.clientHeight - 56;
+    var s = Math.min(1, availW / boxW, availH / boxH);
+    s = Math.max(0.2, s);
+    DEVICE.style.transform = "translate(-50%, -50%) scale(" + s + ")";
+    BADGE.textContent =
+      size.w + " × " + size.h + "　缩放 " + Math.round(s * 100) + "%" +
+      (s < 1 ? "" : "　（1:1 原尺寸）");
+  }
+
+  function readPreset() {
+    var v = PRESET.value;
+    CUSTOM_BOX.hidden = v !== "custom";
+    if (v === "custom") {
+      size.w = clamp(+CW.value || 390, 280, 900);
+      size.h = clamp(+CH.value || 844, 480, 1600);
+    } else {
+      var p = v.split("x");
+      size.w = +p[0];
+      size.h = +p[1];
+    }
+    applySize();
+  }
+
+  function clamp(n, lo, hi) { return Math.min(hi, Math.max(lo, n)); }
+
+  // ── 重载 ────────────────────────────────────────────────
+  function reload() {
+    // 带时间戳，避开浏览器缓存（改完 app.js 立刻见效）
+    FRAME.src = "./index.html?t=" + Date.now();
+  }
+
+  // ── 触摸点提示 ──────────────────────────────────────────
+  var RIPPLE_ID = "__preview_ripple_style";
+
+  function injectRipple() {
+    var doc;
+    try { doc = FRAME.contentDocument; } catch (e) { return; }
+    if (!doc || !doc.head) return;
+    if (doc.getElementById(RIPPLE_ID)) return;
+
+    var st = doc.createElement("style");
+    st.id = RIPPLE_ID;
+    st.textContent = [
+      ".pv-dot{position:fixed;z-index:2147483647;pointer-events:none;",
+      "width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;",
+      "background:rgba(214,164,86,.55);border:2px solid rgba(214,164,86,.95);",
+      "animation:pv-pop .5s ease-out forwards}",
+      "@keyframes pv-pop{from{transform:scale(.35);opacity:1}to{transform:scale(1.6);opacity:0}}"
+    ].join("");
+    doc.head.appendChild(st);
+
+    doc.addEventListener("pointerdown", function (e) {
+      if (!rippleOn) return;
+      var d = doc.createElement("div");
+      d.className = "pv-dot";
+      d.style.left = e.clientX + "px";
+      d.style.top = e.clientY + "px";
+      doc.body.appendChild(d);
+      setTimeout(function () { d.remove(); }, 520);
+    }, true);
+  }
+
+  function syncRipple() {
+    if (rippleOn) injectRipple();
+  }
+
+  FRAME.addEventListener("load", function () {
+    syncRipple();
+  });
+
+  touchBtn.addEventListener("click", function () {
+    rippleOn = !rippleOn;
+    touchBtn.setAttribute("aria-pressed", String(rippleOn));
+    syncRipple();
+  });
+
+  // ── 重置数据（二次确认，清本地存储） ────────────────────
+  document.getElementById("reset").addEventListener("click", function () {
+    var ok = window.confirm(
+      "清空这个预览里的收藏、字体字号皮肤设置，以及引导完成标记？\n\n" +
+      "这会回到「第一次打开」的状态，引导动画也会重新出现。"
+    );
+    if (!ok) return;
+    try {
+      FRAME.contentWindow.localStorage.clear();
+    } catch (e) {
+      /* 同源失败就手动清当前域的存储 */
+      try { localStorage.clear(); } catch (e2) {}
+    }
+    reload();
+  });
+
+  // ── 事件绑定 ────────────────────────────────────────────
+  PRESET.addEventListener("change", readPreset);
+  CW.addEventListener("input", function () { if (PRESET.value === "custom") readPreset(); });
+  CH.addEventListener("input", function () { if (PRESET.value === "custom") readPreset(); });
+  document.getElementById("reload").addEventListener("click", reload);
+
+  window.addEventListener("resize", fit);
+  window.addEventListener("keydown", function (e) {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+    if (e.key === "r" || e.key === "R") reload();
+  });
+
+  // 真机地址提示：浏览器地址栏里的端口换成电脑 IP 即可
+  LAN.textContent = location.protocol + "//<电脑IP>:" + location.port + "/";
+
+  readPreset();
+})();
+</script>
+</body>
+</html>

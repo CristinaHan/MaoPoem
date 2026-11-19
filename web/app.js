@@ -4,9 +4,6 @@
     font: "maoshi-font",
     size: "maoshi-size",
     skin: "maoshi-skin",
-    bg: "maoshi-bg",
-    customBg: "maoshi-custom-bg",
-    opacity: "maoshi-bg-opacity",
     saved: "maoshi-saved",
     searchHist: "maoshi-search-hist"
   };
@@ -19,7 +16,6 @@
     "set-font": document.getElementById("view-set-font"),
     "set-size": document.getElementById("view-set-size"),
     "set-skin": document.getElementById("view-set-skin"),
-    "set-bg": document.getElementById("view-set-bg"),
     about: document.getElementById("view-about"),
     privacy: document.getElementById("view-privacy"),
     help: document.getElementById("view-help"),
@@ -264,6 +260,11 @@
 
   window.handleNativeBack = function () {
     try {
+      // 引导层在最上层：返回键先收起引导，不让用户一头撞到「退出 App」
+      if (window.XingHuoGuide && window.XingHuoGuide.active()) {
+        window.XingHuoGuide.close();
+        return;
+      }
       // 弹层（存图预览/确认框）开着时，返回先关弹层
       const mask = document.getElementById("modal-mask");
       if (mask && !mask.classList.contains("hidden")) {
@@ -282,7 +283,7 @@
       } else if (v === "search") {
         goHome();
       } else if (v === "saved" || v === "set-font" || v === "set-size" ||
-                 v === "set-skin" || v === "set-bg" || v === "about") {
+                 v === "set-skin" || v === "about") {
         renderMine();
       } else if (v === "privacy" || v === "help") {
         show("about");
@@ -298,11 +299,6 @@
   };
 
   function applyPrefs() {
-    let bg = localStorage.getItem(KEY.bg) || "none";
-    if (bg === "xuan" || bg === "ink" || bg === "dan") {
-      bg = "none";
-      localStorage.setItem(KEY.bg, "none");
-    }
     let font = localStorage.getItem(KEY.font) || "song";
     const FONTS = ["song", "kai", "fang", "hei", "huiwen"]; // 非法值回退宋体，避免 data-font 指向无规则名字
     if (FONTS.indexOf(font) === -1) font = "song";
@@ -326,8 +322,6 @@
       size = "17";
       localStorage.setItem(KEY.size, size); // 钳制后持久化，避免摘要显示脏值
     }
-    const custom = localStorage.getItem(KEY.customBg) || "";
-    const opacity = Number(localStorage.getItem(KEY.opacity) || 40);
     document.documentElement.setAttribute("data-font", font);
     document.documentElement.setAttribute("data-skin", skin);
     // 字号按 pt 缩放（以 17pt 为基准，pt 为名义单位），JS inline 覆盖默认变量。
@@ -346,37 +340,18 @@
       if (k === "--fs-date") px = Math.max(px, 8); // 日期行最小 8px，避免最小档过小
       document.documentElement.style.setProperty(k, px + "px");
     });
-    document.documentElement.style.setProperty("--bg-opacity", String(opacity / 100));
-    const hasCustom = bg === "custom" && !!custom;
-    if (hasCustom) {
-      document.documentElement.style.setProperty("--custom-bg", "url(" + JSON.stringify(custom) + ")");
-      document.documentElement.setAttribute("data-bg", "custom");
-    } else {
-      document.documentElement.style.removeProperty("--custom-bg");
-      document.documentElement.setAttribute("data-bg", "none");
-    }
     document.querySelectorAll("#font-chips button").forEach(function (btn) {
       btn.classList.toggle("on", btn.getAttribute("data-font") === font);
     });
     document.querySelectorAll("#skin-chips button").forEach(function (btn) {
       btn.classList.toggle("on", btn.getAttribute("data-skin") === skin);
     });
-    document.querySelectorAll("#bg-chips button").forEach(function (btn) {
-      const mode = btn.getAttribute("data-bg");
-      btn.classList.toggle("on", hasCustom ? mode === "custom" : mode === "none");
-    });
-    const opacityRow = document.getElementById("opacity-row");
-    if (opacityRow) opacityRow.classList.toggle("hidden", !hasCustom);
-    const slider = document.getElementById("bg-opacity");
-    if (slider) slider.value = String(opacity);
     const sizeSlider = document.getElementById("size-slider");
     if (sizeSlider) sizeSlider.value = String(pt);
     const sizeVal = document.getElementById("size-val");
     if (sizeVal) sizeVal.textContent = pt + "pt";
-    const opacityVal = document.getElementById("opacity-val");
-    if (opacityVal) opacityVal.textContent = opacity + "%";
-    updateMineSummaries(); // 「我的」页四行摘要随设置实时刷新
-    syncNativeTheme();     // Android 壳：状态栏颜色随皮肤/背景同步
+    updateMineSummaries(); // 「我的」页三行摘要随设置实时刷新
+    syncNativeTheme();     // Android 壳：状态栏颜色随皮肤纸色同步
   }
 
   // —— Android 壳主题同步：把当前皮肤背景色告诉原生，状态栏颜色随之融合
@@ -397,19 +372,17 @@
     } catch (e) { /* 忽略：非壳环境或异常不影响页面 */ }
   }
 
-  // 「我的」页设置行摘要（字体/字号/皮肤/背景 当前值）
+  // 「我的」页设置行摘要（字体/字号/皮肤 当前值与收藏条数）
   function updateMineSummaries() {
     const FONT_NAMES = { song: "宋体", kai: "楷体", fang: "仿宋", hei: "黑体", huiwen: "汇文明朝" };
     const SKIN_NAMES = { xuan: "米白", bai: "素白", lv: "豆沙绿", zong: "暖棕", qian: "浅灰", ye: "夜读黑", hong: "绛红" };
     const font = localStorage.getItem(KEY.font) || "song";
     const size = localStorage.getItem(KEY.size) || "17";
     const skin = localStorage.getItem(KEY.skin) || "xuan";
-    const bg = (localStorage.getItem(KEY.bg) === "custom" && localStorage.getItem(KEY.customBg)) ? "图片" : "无";
     const el = function (id) { return document.getElementById(id); };
     const v = el("set-font-val"); if (v) v.textContent = FONT_NAMES[font] || "宋体";
     const s = el("set-size-val"); if (s) s.textContent = size + "pt";
     const k = el("set-skin-val"); if (k) k.textContent = SKIN_NAMES[skin] || "米白";
-    const b = el("set-bg-val"); if (b) b.textContent = bg;
     const ex = el("mine-export-val");
     if (ex) {
       const n = readSaved().length;
@@ -418,6 +391,10 @@
   }
 
   function show(name) {
+    // 引导只服务首页：切到别的页（详情/搜索/收藏/我的）时收起，避免遗留半透明遮罩
+    if (name !== "home" && window.XingHuoGuide && window.XingHuoGuide.active()) {
+      window.XingHuoGuide.close();
+    }
     Object.keys(views).forEach(function (key) {
       views[key].classList.toggle("hidden", key !== name);
     });
@@ -589,29 +566,21 @@
       return ln.trim();
     });
 
-    // 自定义背景图（与 .phone::before 相同来源）
-    const hasCustomBg = localStorage.getItem(KEY.bg) === "custom";
-    const bgData = hasCustomBg ? (localStorage.getItem(KEY.customBg) || "") : "";
-    const bgOpacity = Number(localStorage.getItem(KEY.opacity) || 40) / 100;
-
     // 品牌图用 dataURL 内嵌（web/brand-data.js）：file:// 下本地图片会污染 canvas 导致 toBlob 报错，
     // dataURL 视为同源数据，绘制不会污染 canvas，file:// 与 http 均安全。
     const brandPromise = loadImage(typeof BRAND_DATA !== "undefined" ? BRAND_DATA : "brand.png");
-    const bgPromise = bgData ? loadImage(bgData) : Promise.resolve(null);
 
     // 等字体就绪 + 两张图（都保证 settle：fonts.ready 永不 reject，loadImage 用 onload/onerror 兜底）。
     // 加 3s 超时兜底：极端环境下 fonts.ready 若挂起，存图也不至于"点击无反应"。
     const ready = Promise.all([
       document.fonts.ready,
-      brandPromise,
-      bgPromise
+      brandPromise
     ]);
     const timer = new Promise(function (resolve) {
       setTimeout(function () { resolve(null); }, 3000);
     });
     Promise.race([ready, timer]).then(function (res) {
       const brandImg = res ? res[1] : null;
-      const bgImg = res ? res[2] : null;
 
       // 第一遍：测量各段行数，算出总高
       const probe = document.createElement("canvas").getContext("2d");
@@ -657,16 +626,9 @@
       const ctx = canvas.getContext("2d");
       ctx.scale(dpr, dpr);
 
-      // 背景：皮肤纸色 + 自定义背景图（半透明叠加，与页面一致）
+      // 背景：皮肤纸色（纯色）
       ctx.fillStyle = paper;
       ctx.fillRect(0, 0, W, H);
-      if (bgImg) {
-        const sc = Math.max(W / bgImg.width, H / bgImg.height);
-        const bw = bgImg.width * sc, bh = bgImg.height * sc;
-        ctx.globalAlpha = bgOpacity;
-        ctx.drawImage(bgImg, (W - bw) / 2, (H - bh) / 2, bw, bh);
-        ctx.globalAlpha = 1;
-      }
 
       // 金线双框
       ctx.strokeStyle = gold;
@@ -990,8 +952,7 @@
     privacy: [
       "星火是一个离线诗词阅读应用，以「不收集、不追踪、不联网」为设计底线。",
       "本应用不收集任何信息：无账号、无注册，不读取设备标识，无统计埋点，不投放广告，不接入任何第三方 SDK。",
-      "你的设置（字体、字号、皮肤、背景）与收藏内容仅保存在本机浏览器存储中，应用不会上传、不会收集任何个人信息。",
-      "若你上传背景图片，图片只存于本机，不会离开设备。",
+      "你的设置（字体、字号、皮肤）与收藏内容仅保存在本机浏览器存储中，应用不会上传、不会收集任何个人信息。",
       "存图、导出收藏、导入收藏均由你主动触发：生成的图片与备份文件只写入你的设备，不经过任何服务器。",
       "卸载应用或清除浏览器数据后，本地数据随之删除，应用无任何服务器端副本。",
       "完整政策见项目文档《隐私政策》；如有疑问可通过「我的 → 关于 → 反馈」联系。"
@@ -1002,7 +963,7 @@
       "搜索：点左下角「搜索」，输入诗句或诗题找回诗作。",
       "收藏：详情页右上角星标收藏整首诗；「我的 → 收藏」可查看与管理，分「全诗」「单句」两类。",
       "备份：收藏不会离开你的设备；「我的 → 导出收藏」可下载备份文件，换设备后「导入收藏」恢复（合并去重）。",
-      "设置：「我的 → 设置」可调字体（5 种）、字号（12–24pt）、皮肤（7 种配色）与背景图。",
+      "设置：「我的 → 设置」可调字体（5 种）、字号（12–24pt）、皮肤（7 种配色）。",
       "离线可用：字体与数据全部本地，断网也能正常阅读。"
     ]
   };
@@ -1078,7 +1039,7 @@
     this.value = "";
   });
   // 设置四行：跳转子页（与收藏/关于一致的导航方式）
-  ["set-font", "set-size", "set-skin", "set-bg"].forEach(function (id) {
+  ["set-font", "set-size", "set-skin"].forEach(function (id) {
     document.getElementById(id).addEventListener("click", function () {
       show(this.getAttribute("data-view"));
     });
@@ -1086,7 +1047,6 @@
   document.getElementById("setfont-back").addEventListener("click", function () { renderMine(); });
   document.getElementById("setsize-back").addEventListener("click", function () { renderMine(); });
   document.getElementById("setskin-back").addEventListener("click", function () { renderMine(); });
-  document.getElementById("setbg-back").addEventListener("click", function () { renderMine(); });
   document.getElementById("mine-about").addEventListener("click", function () {
     renderAbout();
   });
@@ -1207,66 +1167,6 @@
       return;
     }
     openFromList(e.target, "saved");
-  });
-  document.getElementById("bg-chips").addEventListener("click", function (e) {
-    const btn = e.target.closest("button[data-bg]");
-    if (!btn) return;
-    if (btn.getAttribute("data-bg") === "none") {
-      localStorage.setItem(KEY.bg, "none");
-      localStorage.removeItem(KEY.customBg);
-      applyPrefs();
-      return;
-    }
-    document.getElementById("bg-file").click();
-  });
-  document.getElementById("bg-file").addEventListener("change", function (e) {
-    const file = e.target.files && e.target.files[0];
-    e.target.value = "";
-    if (!file) return;
-    // 格式白名单：HEIC 等浏览器解不开的格式直接提示（文件选择器已按 accept 过滤，这里兜底）
-    const okTypes = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/bmp"];
-    if (file.type && okTypes.indexOf(file.type) === -1) {
-      toast("仅支持 PNG / JPG / WebP / GIF / BMP 格式", 3000);
-      return;
-    }
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = function () {
-      const max = 900;
-      let w = img.width;
-      let h = img.height;
-      if (w > max) {
-        h = Math.round(h * max / w);
-        w = max;
-      }
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-      const c2d = canvas.getContext("2d");
-      // 先铺当前纸色再画图：透明 PNG 转 JPEG 时不至于变黑底
-      c2d.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim() || "#f4efe4";
-      c2d.fillRect(0, 0, w, h);
-      c2d.drawImage(img, 0, 0, w, h);
-      URL.revokeObjectURL(url);
-      const data = canvas.toDataURL("image/jpeg", 0.72);
-      try {
-        localStorage.setItem(KEY.customBg, data);
-        localStorage.setItem(KEY.bg, "custom");
-        applyPrefs();
-        toast("上传成功");
-      } catch (err) {
-        toast("图片太大，换一张小一点的");
-      }
-    };
-    img.onerror = function () {
-      URL.revokeObjectURL(url);
-      toast("这张图打不开");
-    };
-    img.src = url;
-  });
-  document.getElementById("bg-opacity").addEventListener("input", function (e) {
-    localStorage.setItem(KEY.opacity, e.target.value);
-    applyPrefs();
   });
   document.getElementById("font-chips").addEventListener("click", function (e) {
     const btn = e.target.closest("button[data-font]");
